@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttivaMente.Core", "AttivaM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttivaMente.Data", "AttivaMente.Data\AttivaMente.Data.csproj", "{A8DEC4A1-C934-4DDC-AAB6-FB5E09227BE9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AttivaMente.Tests", "AttivaMente.Tests\AttivaMente.Tests.csproj", "{AD883DFC-379C-4528-8FB5-69A9D77DA79F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{A8DEC4A1-C934-4DDC-AAB6-FB5E09227BE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8DEC4A1-C934-4DDC-AAB6-FB5E09227BE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8DEC4A1-C934-4DDC-AAB6-FB5E09227BE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD883DFC-379C-4528-8FB5-69A9D77DA79F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD883DFC-379C-4528-8FB5-69A9D77DA79F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD883DFC-379C-4528-8FB5-69A9D77DA79F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD883DFC-379C-4528-8FB5-69A9D77DA79F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
