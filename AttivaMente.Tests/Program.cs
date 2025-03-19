@@ -1,6 +1,6 @@
 ﻿using AttivaMente.Core.Models;
 using AttivaMente.Core.Security;
-using Microsoft.Data.SqlClient;
+using System.Data.SqlClient;
 
 #region InMemory
 Ruolo rAdmin = new Ruolo()
@@ -25,10 +25,20 @@ Console.WriteLine($"Utilizzo utente creato in memoria\n{utente}\n\n");
 string connStr = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\oscar.cambieri\\Desktop\\attivamente2025\\AttivaMente.Data\\AttivaMenteDB.mdf;Integrated Security=True;Connect Timeout=30";
 using (SqlConnection connection = new SqlConnection(connStr))
 {
-    string sqlQuery = "SELECT * FROM Utenti";
+    connection.Open();
+    // string sqlQuery = "SELECT * FROM Ruoli";
+    string sqlQuery = "SELECT Id, Nome FROM Ruoli";
     using (SqlCommand command = new SqlCommand(sqlQuery, connection))
     {
-
+        using (SqlDataReader reader = command.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                int id = reader.GetInt32(0);
+                string nome = reader.GetString(1);
+                Console.WriteLine($"ID: {id}, Nome: {nome}");
+            }
+        }
     }
 }
 #endregion
