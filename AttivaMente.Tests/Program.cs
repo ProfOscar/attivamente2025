@@ -1,6 +1,6 @@
 ﻿using AttivaMente.Core.Models;
 using AttivaMente.Core.Security;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 #region InMemory
 Ruolo rAdmin = new Ruolo()
@@ -22,7 +22,8 @@ Console.WriteLine($"Utilizzo utente creato in memoria\n{utente}\n\n");
 #endregion
 
 #region SqlServer
-string connStr = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\oscar.cambieri\\Desktop\\attivamente2025\\AttivaMente.Data\\AttivaMenteDB.mdf;Integrated Security=True;Connect Timeout=30";
+string dbFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}AttivaMenteDB.mdf";
+string connStr = $"Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename={dbFilePath};Integrated Security=True;Connect Timeout=30";
 using (SqlConnection connection = new SqlConnection(connStr))
 {
     connection.Open();
@@ -40,5 +41,8 @@ using (SqlConnection connection = new SqlConnection(connStr))
             }
         }
     }
+    connection.Close();
 }
 #endregion
+
+Console.ReadKey();
