@@ -1,5 +1,7 @@
 using AttivaMente.Core.Models;
 using AttivaMente.Core.Security;
+using AttivaMente.Data;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,22 @@ app.UseStaticFiles();
 //};
 
 //app.MapGet("/", () => $"Hello {utente}");
+#endregion
+
+#region TestConnessioneDB
+//string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+//Database db = new Database(connectionString);
+
+//try
+//{
+//    using var conn = db.GetConnection();
+//    conn.Open();
+//    Console.WriteLine("Connessione riuscita.");
+//}
+//catch (Exception ex)
+//{
+//    Console.WriteLine("Errore di connessione: " + ex.Message);
+//}
 #endregion
 
 // Configura il routing: usa i Controller e le Views
