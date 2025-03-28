@@ -1,4 +1,5 @@
-@model List<string>
+@using AttivaMente.Core.Models
+@model List<Ruolo>
 
 <h1>Benvenuto in AttivaMente!</h1>
 
@@ -6,6 +7,6 @@
 <ul>
     @foreach (var ruolo in Model)
     {
-        <li>@ruolo</li>
+        <li>@ruolo.Nome (Id: @ruolo.Id)</li>
     }
 </ul>

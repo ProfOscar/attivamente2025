@@ -15,5 +15,13 @@ namespace AttivaMente.Data
         {
             return new SqlConnection(_connectionString);
         }
+
+        public SqlDataReader ExecuteReader(string query)
+        {
+            var connection = GetConnection();
+            var command = new SqlCommand(query, connection);
+            connection.Open();
+            return command.ExecuteReader();
+        }
     }
 }

@@ -16,20 +16,9 @@ namespace AttivaMente.Web.Controllers
         public IActionResult Index()
         {
             var connectionString = _configuration.GetConnectionString("DefaultConnection");
-            var db = new Database(connectionString);
-            var ruoli = new List<string>();
+            var ruoloRepository = new RuoloRepository(connectionString);
 
-            using var conn = db.GetConnection();
-            conn.Open();
-
-            var command = new SqlCommand("SELECT Nome FROM Ruoli", conn);
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                ruoli.Add(reader.GetString(0));
-            }
-
-            return View(ruoli); // Passa i dati alla View
+            return View(ruoloRepository.GetAll()); // Passa i dati alla View
         }
     }
 }

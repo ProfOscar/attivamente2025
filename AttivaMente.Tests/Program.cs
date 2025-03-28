@@ -1,5 +1,6 @@
 ﻿using AttivaMente.Core.Models;
 using AttivaMente.Core.Security;
+using AttivaMente.Data;
 using Microsoft.Data.SqlClient;
 
 #region InMemory
@@ -22,27 +23,63 @@ Console.WriteLine($"Utilizzo utente creato in memoria\n{utente}\n\n");
 #endregion
 
 #region SqlServer
-string dbFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}AttivaMenteDB.mdf";
+string dbFilePath = "C:\\Dati\\AttivaMenteDB.mdf";
 string connStr = $"Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename={dbFilePath};Integrated Security=True;Connect Timeout=30";
-using (SqlConnection connection = new SqlConnection(connStr))
+RuoloRepository repository = new RuoloRepository(connStr);
+
+char scelta = ' ';
+do
 {
-    connection.Open();
-    // string sqlQuery = "SELECT * FROM Ruoli";
-    string sqlQuery = "SELECT Id, Nome FROM Ruoli";
-    using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+    Console.Clear();
+    Console.WriteLine("*** TEST FUNZIONALITA ***");
+    Console.WriteLine("\n- RUOLI -");
+    Console.WriteLine("a) LISTA ruoli");
+    Console.WriteLine("b) ruolo SINGOLO");
+    Console.WriteLine("c) AGGIUNGI ruolo");
+    Console.WriteLine("d) MODIFICA ruolo");
+    Console.WriteLine("e) CANCELLA ruolo");
+    Console.WriteLine("\nq) ESCI");
+    scelta = Console.ReadKey(true).KeyChar;
+    switch (scelta)
     {
-        using (SqlDataReader reader = command.ExecuteReader())
-        {
-            while (reader.Read())
-            {
-                int id = reader.GetInt32(0);
-                string nome = reader.GetString(1);
-                Console.WriteLine($"ID: {id}, Nome: {nome}");
-            }
-        }
+        case 'a':
+            ListaRuoli();
+            break;
+        case 'b':
+            RuoloSingolo(2);
+            break;
+        case 'c':
+            break;
+        case 'd':
+            break;
+        case 'e':
+            break;
+        default:
+            if (scelta != 'q') 
+                Console.WriteLine("\nInserisci una scelta valida");
+            break;
     }
-    connection.Close();
+    if (scelta != 'q')
+    {
+        Console.WriteLine("(premi un tasto per continuare)");
+        Console.ReadKey(true);
+    }
+} while (scelta != 'q');
+
+void ListaRuoli()
+{
+    foreach (var ruolo in repository.GetAll())
+    {
+        Console.WriteLine($"{ruolo.Id} - {ruolo.Nome}");
+    }
+}
+
+void RuoloSingolo(int id)
+{
+    Ruolo ruolo = repository.GetById(id);
+    if (ruolo == null)
+        Console.WriteLine("NON TROVATO");
+    else
+        Console.WriteLine(ruolo);
 }
 #endregion
-
-Console.ReadKey();
