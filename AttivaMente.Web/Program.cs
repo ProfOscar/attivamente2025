@@ -34,19 +34,19 @@ app.UseStaticFiles();
 #endregion
 
 #region TestConnessioneDB
-//string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-//Database db = new Database(connectionString);
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+Database db = new Database(connectionString);
 
-//try
-//{
-//    using var conn = db.GetConnection();
-//    conn.Open();
-//    Console.WriteLine("Connessione riuscita.");
-//}
-//catch (Exception ex)
-//{
-//    Console.WriteLine("Errore di connessione: " + ex.Message);
-//}
+try
+{
+    using var conn = db.GetConnection();
+    conn.Open();
+    Console.WriteLine("Connessione riuscita.");
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Errore di connessione: " + ex.Message);
+}
 #endregion
 
 // Configura il routing: usa i Controller e le Views

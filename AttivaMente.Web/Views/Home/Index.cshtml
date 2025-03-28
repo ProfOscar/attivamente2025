@@ -1,2 +1,11 @@
-<h1>AttivaMente</h1>
-<p>Questa è la homepage dell'applicazione.</p>
+@model List<string>
+
+<h1>Benvenuto in AttivaMente!</h1>
+
+<h3>Ruoli presenti nel database:</h3>
+<ul>
+    @foreach (var ruolo in Model)
+    {
+        <li>@ruolo</li>
+    }
+</ul>
