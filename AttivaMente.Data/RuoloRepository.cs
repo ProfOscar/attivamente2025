@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Threading.Tasks;
-using AttivaMente.Core.Models;
+﻿using AttivaMente.Core.Models;
 
 namespace AttivaMente.Data
 {
@@ -58,11 +52,11 @@ namespace AttivaMente.Data
         }
 
         public int Update(string nomeRuolo, int idRuolo) { 
-            return _db.ExecuteNonQuery($"UPDATE Ruoli SET Nome='{nomeRuolo}' WHERE Id={idRuolo}");
+            return _db.ExecuteNonQuery($"UPDATE Ruoli SET Nome='{nomeRuolo}' WHERE Id = {idRuolo}");
         }
         
         public int Delete(int idRuolo) {
-            return _db.ExecuteNonQuery($"DELETE FROM Ruoli WHERE Id={idRuolo}");
+            return _db.ExecuteNonQuery($"DELETE FROM Ruoli WHERE Id = {idRuolo}");
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using AttivaMente.Core.Models;
 using AttivaMente.Core.Security;
 using AttivaMente.Data;
-using Microsoft.Data.SqlClient;
 
 #region InMemory
 Ruolo rAdmin = new Ruolo()
@@ -25,7 +24,9 @@ Console.WriteLine($"Utilizzo utente creato in memoria\n{utente}\n\n");
 #region SqlServer
 string dbFilePath = "C:\\Dati\\AttivaMenteDB.mdf";
 string connStr = $"Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename={dbFilePath};Integrated Security=True;Connect Timeout=30";
+
 RuoloRepository ruoloRepository = new RuoloRepository(connStr);
+UtenteRepository utenteRepository = new UtenteRepository(connStr);
 
 char scelta = ' ';
 do
@@ -38,7 +39,15 @@ do
     Console.WriteLine("c) AGGIUNGI ruolo");
     Console.WriteLine("d) MODIFICA ruolo");
     Console.WriteLine("e) CANCELLA ruolo");
+    Console.WriteLine("\n- UTENTI -");
+    Console.WriteLine("g) LISTA utenti");
+    Console.WriteLine("h) utente SINGOLO");
+    Console.WriteLine("i) AGGIUNGI utente");
+    Console.WriteLine("l) MODIFICA utente");
+    Console.WriteLine("m) CANCELLA utente");
+    Console.WriteLine("-----");
     Console.WriteLine("\nq) ESCI");
+    Console.WriteLine();
     scelta = Console.ReadKey(true).KeyChar;
     switch (scelta)
     {
@@ -57,6 +66,21 @@ do
         case 'e':
             CancellaRuolo();
             break;
+        case 'g':
+            ListaUtenti();
+            break;
+        case 'h':
+            UtenteSingolo(2);
+            break;
+        case 'i':
+            AggiungiUtente();
+            break;
+        case 'l':
+            ModificaUtente();
+            break;
+        case 'm':
+            CancellaUtente();
+            break;
         default:
             if (scelta != 'q') 
                 Console.WriteLine("\nInserisci una scelta valida");
@@ -64,7 +88,7 @@ do
     }
     if (scelta != 'q')
     {
-        Console.WriteLine("(premi un tasto per continuare)");
+        Console.WriteLine("\n(premi un tasto per continuare)");
         Console.ReadKey(true);
     }
 } while (scelta != 'q');
@@ -113,5 +137,55 @@ void CancellaRuolo()
         Console.WriteLine("NON CANCELLATO");
     else
         Console.WriteLine($"Ruolo con Id {idRuolo} CANCELLATO correttamente");
+}
+
+void ListaUtenti()
+{
+    foreach (var utente in utenteRepository.GetAll())
+    {
+        Console.WriteLine(utente);
+    }
+}
+
+void UtenteSingolo(int id)
+{
+    Utente? utente = utenteRepository.GetById(id);
+    if (utente == null)
+        Console.WriteLine("NON TROVATO");
+    else
+        Console.WriteLine(utente);
+}
+
+void AggiungiUtente()
+{
+    Utente nuovoUtente = new Utente
+    {
+        Nome = "Giovanni",
+        Cognome = "Giolitti",
+        Email = "giovanni.giolitti@example.com",
+        PasswordHash = PasswordHelper.HashPassword("giopassword123"),
+        RuoloId = 2
+    };
+    int retVal = utenteRepository.Add(nuovoUtente);
+    if (retVal <= 0)
+        Console.WriteLine("NON AGGIUNTO");
+    else
+        Console.WriteLine($"Utente {nuovoUtente.Cognome} AGGIUNTO correttamente");
+}
+
+void ModificaUtente()
+{
+    throw new NotImplementedException();
+}
+
+void CancellaUtente()
+{
+    Console.Write("\nInserisci l'Id dell'Utente da CANCELLARE: ");
+    int idUtente = int.Parse(Console.ReadLine() ?? "0");
+    int retVal = utenteRepository.Delete(idUtente);
+    if (retVal <= 0)
+        Console.WriteLine("NON CANCELLATO");
+    else
+        Console.WriteLine($"Utente con Id {idUtente} CANCELLATO correttamente");
 }
 #endregion
