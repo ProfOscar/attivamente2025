@@ -38,7 +38,7 @@ namespace AttivaMente.Data
             return ruoli;
         }
         
-        public Ruolo GetById(int id) {
+        public Ruolo? GetById(int id) {
             string query = $"SELECT Id, Nome FROM Ruoli WHERE Id={id}";
             using var reader = _db.ExecuteReader(query);
             if (reader.Read())
@@ -53,8 +53,16 @@ namespace AttivaMente.Data
             return null;
         }
 
-        // public void Add(Ruolo ruolo) { }
-        // public void Update(Ruolo ruolo) { }
-        // public void Delete(int id) { }
+        public int Add(string nomeRuolo) {
+            return _db.ExecuteNonQuery($"INSERT INTO Ruoli(Nome) VALUES('{nomeRuolo}')");
+        }
+
+        public int Update(string nomeRuolo, int idRuolo) { 
+            return _db.ExecuteNonQuery($"UPDATE Ruoli SET Nome='{nomeRuolo}' WHERE Id={idRuolo}");
+        }
+        
+        public int Delete(int idRuolo) {
+            return _db.ExecuteNonQuery($"DELETE FROM Ruoli WHERE Id={idRuolo}");
+        }
     }
 }

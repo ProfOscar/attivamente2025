@@ -25,7 +25,7 @@ Console.WriteLine($"Utilizzo utente creato in memoria\n{utente}\n\n");
 #region SqlServer
 string dbFilePath = "C:\\Dati\\AttivaMenteDB.mdf";
 string connStr = $"Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename={dbFilePath};Integrated Security=True;Connect Timeout=30";
-RuoloRepository repository = new RuoloRepository(connStr);
+RuoloRepository ruoloRepository = new RuoloRepository(connStr);
 
 char scelta = ' ';
 do
@@ -49,10 +49,13 @@ do
             RuoloSingolo(2);
             break;
         case 'c':
+            AggiungiRuolo("Test Aggiunta");
             break;
         case 'd':
+            ModificaRuolo("Test Modifica", 5);
             break;
         case 'e':
+            CancellaRuolo();
             break;
         default:
             if (scelta != 'q') 
@@ -68,7 +71,7 @@ do
 
 void ListaRuoli()
 {
-    foreach (var ruolo in repository.GetAll())
+    foreach (var ruolo in ruoloRepository.GetAll())
     {
         Console.WriteLine($"{ruolo.Id} - {ruolo.Nome}");
     }
@@ -76,10 +79,39 @@ void ListaRuoli()
 
 void RuoloSingolo(int id)
 {
-    Ruolo ruolo = repository.GetById(id);
+    Ruolo? ruolo = ruoloRepository.GetById(id);
     if (ruolo == null)
         Console.WriteLine("NON TROVATO");
     else
         Console.WriteLine(ruolo);
+}
+
+void AggiungiRuolo(string nomeRuolo)
+{
+    int retVal = ruoloRepository.Add(nomeRuolo);
+    if (retVal <= 0)
+        Console.WriteLine("NON AGGIUNTO");
+    else 
+        Console.WriteLine($"Ruolo {nomeRuolo} AGGIUNTO correttamente");
+}
+
+void ModificaRuolo(string nomeRuolo, int idRuolo)
+{
+    int retVal = ruoloRepository.Update(nomeRuolo, idRuolo);
+    if (retVal <= 0)
+        Console.WriteLine("NON MODIFICATO");
+    else
+        Console.WriteLine($"Ruolo {nomeRuolo} MODIFICATO correttamente");
+}
+
+void CancellaRuolo()
+{
+    Console.Write("\nInserisci l'Id del Ruolo da CANCELLARE: ");
+    int idRuolo = int.Parse(Console.ReadLine() ?? "0");
+    int retVal = ruoloRepository.Delete(idRuolo);
+    if (retVal <= 0)
+        Console.WriteLine("NON CANCELLATO");
+    else
+        Console.WriteLine($"Ruolo con Id {idRuolo} CANCELLATO correttamente");
 }
 #endregion

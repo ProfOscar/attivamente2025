@@ -21,7 +21,15 @@ namespace AttivaMente.Data
             var connection = GetConnection();
             var command = new SqlCommand(query, connection);
             connection.Open();
-            return command.ExecuteReader();
+            return command.ExecuteReader(); // attenzione: il chiamante deve chiudere
+        }
+
+        public int ExecuteNonQuery(string sql)
+        {
+            var connection = GetConnection();
+            var command = new SqlCommand(sql, connection);
+            connection.Open();
+            return command.ExecuteNonQuery();
         }
     }
 }
