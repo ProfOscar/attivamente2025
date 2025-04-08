@@ -1,4 +1,5 @@
 ﻿using AttivaMente.Core.Models;
+using Microsoft.Data.SqlClient;
 
 namespace AttivaMente.Data
 {
@@ -33,8 +34,9 @@ namespace AttivaMente.Data
         }
         
         public Ruolo? GetById(int id) {
-            string query = $"SELECT Id, Nome FROM Ruoli WHERE Id={id}";
-            using var reader = _db.ExecuteReader(query);
+            string query = "SELECT Id, Nome FROM Ruoli WHERE Id=@idPlaceholder";
+            var parameters = new[] { new SqlParameter("@idPlaceholder", id) };
+            using var reader = _db.ExecuteReader(query, parameters);
             if (reader.Read())
             {
                 var ruolo = new Ruolo
@@ -48,7 +50,9 @@ namespace AttivaMente.Data
         }
 
         public int Add(string nomeRuolo) {
-            return _db.ExecuteNonQuery($"INSERT INTO Ruoli(Nome) VALUES('{nomeRuolo}')");
+            string query = "INSERT INTO Ruoli(Nome) VALUES(@nomePlaceholder)";
+            var parameters = new[] { new SqlParameter("@nomePlaceholder", nomeRuolo) };
+            return _db.ExecuteNonQuery(query, parameters);
         }
 
         public int Update(string nomeRuolo, int idRuolo) { 
