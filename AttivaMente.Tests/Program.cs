@@ -175,7 +175,19 @@ void AggiungiUtente()
 
 void ModificaUtente()
 {
-    throw new NotImplementedException();
+    Utente? utenteDaModificare = utenteRepository.GetById(2);
+    if (utenteDaModificare != null)
+    {
+        utenteDaModificare.Cognome = "CognModificato";
+        utenteDaModificare.Nome = "NomeModificato";
+        int retVal = utenteRepository.Update(utenteDaModificare);
+        if (retVal <= 0)
+            Console.WriteLine("NON MODIFICATO");
+        else
+            Console.WriteLine($"Utente {utenteDaModificare.Cognome} MODIFICATO correttamente");
+    }
+    else
+        Console.WriteLine("Utente da modificare NON TROVATO");
 }
 
 void CancellaUtente()
