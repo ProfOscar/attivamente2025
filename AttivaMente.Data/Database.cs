@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace AttivaMente.Data
 {
@@ -19,17 +20,17 @@ namespace AttivaMente.Data
         public SqlDataReader ExecuteReader(string query, SqlParameter[]? parameters = null)
         {
             var connection = GetConnection();
-            var command = new SqlCommand(query, connection);
+            using var command = new SqlCommand(query, connection);
             if (parameters != null)
                 command.Parameters.AddRange(parameters);
             connection.Open();
-            return command.ExecuteReader(); // attenzione: il chiamante deve chiudere
+            return command.ExecuteReader(CommandBehavior.CloseConnection);
         }
 
         public int ExecuteNonQuery(string sql, SqlParameter[]? parameters = null)
         {
-            var connection = GetConnection();
-            var command = new SqlCommand(sql, connection);
+            using var connection = GetConnection();
+            using var command = new SqlCommand(sql, connection);
             if (parameters != null)
                 command.Parameters.AddRange(parameters);
             connection.Open();

@@ -160,10 +160,10 @@ void AggiungiUtente()
 {
     Utente nuovoUtente = new Utente
     {
-        Nome = "Giovanni",
-        Cognome = "Giolitti",
-        Email = "giovanni.giolitti@example.com",
-        PasswordHash = PasswordHelper.HashPassword("giopassword123"),
+        Nome = "Guglielmo",
+        Cognome = "Marconi",
+        Email = "g.marconi@example.com",
+        PasswordHash = PasswordHelper.HashPassword("gmarc123"),
         RuoloId = 2
     };
     int retVal = utenteRepository.Add(nuovoUtente);
