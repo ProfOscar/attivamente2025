@@ -1,4 +1,5 @@
 ﻿using AttivaMente.Core.Models;
+using Microsoft.Data.SqlClient;
 
 namespace AttivaMente.Data
 {
@@ -36,7 +37,9 @@ namespace AttivaMente.Data
 
         public Utente? GetById(int id)
         {
-            using var reader = _db.ExecuteReader($"SELECT * FROM Utenti WHERE Id = {id}");
+            string query = "SELECT * FROM Utenti WHERE Id = @idPlaceholder";
+            var parameters = new[] { new SqlParameter("@idPlaceholder", id) };
+            using var reader = _db.ExecuteReader(query, parameters);
             if (reader.Read())
             {
                 return new Utente
@@ -54,21 +57,40 @@ namespace AttivaMente.Data
 
         public int Add(Utente utente)
         {
-            return _db.ExecuteNonQuery($"INSERT INTO Utenti (Nome, Cognome, Email, PasswordHash, RuoloId) " +
-                                $"VALUES ('{utente.Nome}', '{utente.Cognome}', '{utente.Email}', '{utente.PasswordHash}', {utente.RuoloId})");
+            string sql = "INSERT INTO Utenti (Nome, Cognome, Email, PasswordHash, RuoloId) " +
+                                $"VALUES (@nomePlaceholder, @cognPlaceholder, @emailPlaceholder, @pwHashPlaceholder, @ruoloIdPlaceholder)";
+            var parameters = new[] {
+                new SqlParameter("@nomePlaceholder", utente.Nome),
+                new SqlParameter("@cognPlaceholder", utente.Cognome),
+                new SqlParameter("@emailPlaceholder", utente.Email),
+                new SqlParameter("@pwHashPlaceholder", utente.PasswordHash),
+                new SqlParameter("@ruoloIdPlaceholder", utente.RuoloId)
+            };
+            return _db.ExecuteNonQuery(sql, parameters);
         }
 
         public int Update(Utente utente)
         {
-            return _db.ExecuteNonQuery($"UPDATE Utenti SET " +
-                                $"Nome = '{utente.Nome}', Cognome = '{utente.Cognome}', " +
-                                $"Email = '{utente.Email}', PasswordHash = '{utente.PasswordHash}', RuoloId = {utente.RuoloId} " +
-                                $"WHERE Id = {utente.Id}");
+            string sql = "UPDATE Utenti SET " +
+                                "Nome = @nomePlaceholder, Cognome = @cognPlaceholder, " +
+                                "Email = @emailPlaceholder, PasswordHash = @pwHashPlaceholder, RuoloId = @ruoloIdPlaceholder " +
+                                "WHERE Id = @idPlaceholder";
+            var parameters = new[] {
+                new SqlParameter("@idPlaceholder", utente.Id),
+                new SqlParameter("@nomePlaceholder", utente.Nome),
+                new SqlParameter("@cognPlaceholder", utente.Cognome),
+                new SqlParameter("@emailPlaceholder", utente.Email),
+                new SqlParameter("@pwHashPlaceholder", utente.PasswordHash),
+                new SqlParameter("@ruoloIdPlaceholder", utente.RuoloId)
+            };
+            return _db.ExecuteNonQuery(sql, parameters);
         }
 
         public int Delete(int id)
         {
-            return _db.ExecuteNonQuery($"DELETE FROM Utenti WHERE Id = {id}");
+            string sql = "DELETE FROM Utenti WHERE Id = @idPlaceholder";
+            var parameters = new[] { new SqlParameter("@idPlaceholder", id) };
+            return _db.ExecuteNonQuery(sql, parameters);
         }
     }
 }

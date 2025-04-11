@@ -34,7 +34,7 @@ namespace AttivaMente.Data
         }
         
         public Ruolo? GetById(int id) {
-            string query = "SELECT Id, Nome FROM Ruoli WHERE Id=@idPlaceholder";
+            string query = "SELECT Id, Nome FROM Ruoli WHERE Id = @idPlaceholder";
             var parameters = new[] { new SqlParameter("@idPlaceholder", id) };
             using var reader = _db.ExecuteReader(query, parameters);
             if (reader.Read())
@@ -50,17 +50,24 @@ namespace AttivaMente.Data
         }
 
         public int Add(string nomeRuolo) {
-            string query = "INSERT INTO Ruoli(Nome) VALUES(@nomePlaceholder)";
+            string sql = "INSERT INTO Ruoli(Nome) VALUES(@nomePlaceholder)";
             var parameters = new[] { new SqlParameter("@nomePlaceholder", nomeRuolo) };
-            return _db.ExecuteNonQuery(query, parameters);
+            return _db.ExecuteNonQuery(sql, parameters);
         }
 
-        public int Update(string nomeRuolo, int idRuolo) { 
-            return _db.ExecuteNonQuery($"UPDATE Ruoli SET Nome='{nomeRuolo}' WHERE Id = {idRuolo}");
+        public int Update(string nomeRuolo, int idRuolo) {
+            string sql = "UPDATE Ruoli SET Nome = @nomePlaceholder WHERE Id = @idPlaceholder";
+            var parameters = new[] {
+                new SqlParameter("@idPlaceholder", idRuolo),
+                new SqlParameter("@nomePlaceholder", nomeRuolo) 
+            };
+            return _db.ExecuteNonQuery(sql, parameters);
         }
         
         public int Delete(int idRuolo) {
-            return _db.ExecuteNonQuery($"DELETE FROM Ruoli WHERE Id = {idRuolo}");
+            string sql = "DELETE FROM Ruoli WHERE Id = @idPlaceholder";
+            var parameters = new[] { new SqlParameter("@idPlaceholder", idRuolo) };
+            return _db.ExecuteNonQuery(sql, parameters);
         }
     }
 }
