@@ -1,0 +1,14 @@
+﻿<h2>Ruoli disponibili</h2>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+    </tr>
+    @foreach (var ruolo in Model)
+    {
+        <tr>
+            <td>ruolo.Id</td>
+            <td>ruolo.Nome</td>
+        </tr>
+    }
+</table>
