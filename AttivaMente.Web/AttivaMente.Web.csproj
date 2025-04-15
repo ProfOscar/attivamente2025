@@ -7,14 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Ruolo\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\Ruolo\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AttivaMente.Core\AttivaMente.Core.csproj" />
     <ProjectReference Include="..\AttivaMente.Data\AttivaMente.Data.csproj" />
   </ItemGroup>
