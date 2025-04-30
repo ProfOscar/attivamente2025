@@ -18,6 +18,7 @@ namespace AttivaMente.Web.Controllers
             var connectionString = _configuration.GetConnectionString("DefaultConnection");
             var ruoloRepository = new RuoloRepository(connectionString);
 
+            ViewBag.Title = "Homepage";
             return View(ruoloRepository.GetAll()); // Passa i dati alla View
         }
     }

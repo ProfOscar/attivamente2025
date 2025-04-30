@@ -8,5 +8,11 @@ namespace AttivaMente.Web.Controllers
         {
 
         }
+
+        public IActionResult Index()
+        {
+            ViewBag.Title = "Utenti";
+            return Content("TODO::Gestione Utenti");
+        }
     }
 }

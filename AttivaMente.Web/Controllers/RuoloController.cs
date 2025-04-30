@@ -15,6 +15,7 @@ namespace AttivaMente.Web.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.Title = "Ruoli";
             var ruoli = _repo.GetAll();
             return View(ruoli);
         }
