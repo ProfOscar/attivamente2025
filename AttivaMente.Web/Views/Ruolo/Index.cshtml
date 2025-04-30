@@ -1,14 +1,22 @@
-﻿<h2>Ruoli disponibili</h2>
-<table>
+﻿@using AttivaMente.Core.Models
+@model List<Ruolo>
+<h2>Ruoli disponibili</h2>
+<a class="btn btn-primary" href="/Ruolo/Create">Aggiungi</a>
+<table class="table">
     <tr>
         <th>ID</th>
         <th>Nome</th>
+        <th>Azioni</th>
     </tr>
     @foreach (var ruolo in Model)
     {
         <tr>
             <td>@ruolo.Id</td>
             <td>@ruolo.Nome</td>
+            <td>
+                <a href="/Ruolo/Edit/@ruolo.Id">Modifica</a> |
+                <a href="/Ruolo/Delete/@ruolo.Id">Elimina</a>
+            </td>
         </tr>
     }
 </table>
