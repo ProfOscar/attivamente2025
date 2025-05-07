@@ -1,7 +1,7 @@
 ﻿@using AttivaMente.Core.Models
 @model List<Ruolo>
 <h2>Ruoli disponibili</h2>
-<a class="btn btn-primary" href="/Ruolo/Create">Aggiungi</a>
+<a class="btn btn-primary" asp-action="Create">Aggiungi</a>
 <table class="table">
     <tr>
         <th>ID</th>
@@ -14,8 +14,8 @@
             <td>@ruolo.Id</td>
             <td>@ruolo.Nome</td>
             <td>
-                <a href="/Ruolo/Edit/@ruolo.Id">Modifica</a> |
-                <a href="/Ruolo/Delete/@ruolo.Id">Elimina</a>
+                <a asp-action="Edit" asp-route-id="@ruolo.Id">Modifica</a> |
+                <a asp-action="Delete" asp-route-id="@ruolo.Id">Elimina</a>
             </td>
         </tr>
     }
