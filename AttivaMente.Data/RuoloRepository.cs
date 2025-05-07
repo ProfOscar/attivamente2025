@@ -49,9 +49,9 @@ namespace AttivaMente.Data
             return null;
         }
 
-        public int Add(string nomeRuolo) {
+        public int Add(Ruolo ruolo) {
             string sql = "INSERT INTO Ruoli(Nome) VALUES(@nomePlaceholder)";
-            var parameters = new[] { new SqlParameter("@nomePlaceholder", nomeRuolo) };
+            var parameters = new[] { new SqlParameter("@nomePlaceholder", ruolo.Nome) };
             return _db.ExecuteNonQuery(sql, parameters);
         }
 

@@ -112,7 +112,7 @@ void RuoloSingolo(int id)
 
 void AggiungiRuolo(string nomeRuolo)
 {
-    int retVal = ruoloRepository.Add(nomeRuolo);
+    int retVal = ruoloRepository.Add(new Ruolo { Nome = nomeRuolo });
     if (retVal <= 0)
         Console.WriteLine("NON AGGIUNTO");
     else 
