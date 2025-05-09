@@ -53,5 +53,19 @@ namespace AttivaMente.Web.Controllers
             }
             return View(ruolo);
         }
+
+
+        public IActionResult Delete(int id)
+        {
+            var ruolo = _repo.GetById(id);
+            if (ruolo == null) return NotFound();
+            return View(ruolo);
+        }
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            _repo.Delete(id);
+            return RedirectToAction("Index");
+        }
     }
 }

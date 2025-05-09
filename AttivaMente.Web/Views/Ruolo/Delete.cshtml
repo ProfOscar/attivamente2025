@@ -1,0 +1,10 @@
+@model AttivaMente.Core.Models.Ruolo
+<h2>Conferma Eliminazione</h2>
+
+<p>Sei sicuro di voler eliminare il ruolo <strong>@Model.Nome</strong>?</p>
+
+<form asp-action="Delete" method="post">
+	<input type="hidden" asp-for="Id" />
+	<button type="submit" class="btn btn-danger">Sì, elimina</button>
+	<a asp-action="Index" class="btn btn-secondary">Annulla</a>
+</form>
