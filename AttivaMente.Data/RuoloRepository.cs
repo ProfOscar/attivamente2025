@@ -55,11 +55,11 @@ namespace AttivaMente.Data
             return _db.ExecuteNonQuery(sql, parameters);
         }
 
-        public int Update(string nomeRuolo, int idRuolo) {
+        public int Update(Ruolo ruolo) {
             string sql = "UPDATE Ruoli SET Nome = @nomePlaceholder WHERE Id = @idPlaceholder";
             var parameters = new[] {
-                new SqlParameter("@idPlaceholder", idRuolo),
-                new SqlParameter("@nomePlaceholder", nomeRuolo) 
+                new SqlParameter("@idPlaceholder", ruolo.Id),
+                new SqlParameter("@nomePlaceholder", ruolo.Nome) 
             };
             return _db.ExecuteNonQuery(sql, parameters);
         }

@@ -121,11 +121,17 @@ void AggiungiRuolo(string nomeRuolo)
 
 void ModificaRuolo(string nomeRuolo, int idRuolo)
 {
-    int retVal = ruoloRepository.Update(nomeRuolo, idRuolo);
-    if (retVal <= 0)
-        Console.WriteLine("NON MODIFICATO");
+    Ruolo? ruolo = ruoloRepository.GetById(idRuolo);
+    if (ruolo == null)
+        Console.WriteLine("NON TROVATO");
     else
-        Console.WriteLine($"Ruolo {nomeRuolo} MODIFICATO correttamente");
+    {
+        int retVal = ruoloRepository.Update(ruolo);
+        if (retVal <= 0)
+            Console.WriteLine("NON MODIFICATO");
+        else
+            Console.WriteLine($"Ruolo {nomeRuolo} MODIFICATO correttamente");
+    }
 }
 
 void CancellaRuolo()
