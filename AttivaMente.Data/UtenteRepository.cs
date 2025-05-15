@@ -15,7 +15,8 @@ namespace AttivaMente.Data
         public List<Utente> GetAll()
         {
             var utenti = new List<Utente>();
-            string query = "SELECT * FROM Utenti";
+            string query = @"SELECT u.Id, u.Nome, u.Cognome, u.Email, u.PasswordHash, u.RuoloId,r.Id AS Ruolo_Id, r.Nome AS Ruolo_Nome
+                FROM Utenti u LEFT JOIN Ruoli r ON u.RuoloId = r.Id";
 
             using var reader = _db.ExecuteReader(query);
             while (reader.Read())
@@ -26,9 +27,14 @@ namespace AttivaMente.Data
                     Nome = reader.GetString(1),
                     Cognome = reader.GetString(2),
                     Email = reader.GetString(3),
-                    PasswordHash = reader.GetString(4),
+                    PasswordHash = reader.IsDBNull(4) ? "" : reader.GetString(4),
                     // PasswordHash = Convert.ToString(reader["PasswordHash"]) ?? "",
-                    RuoloId = reader.GetInt32(5)
+                    RuoloId = reader.GetInt32(5),
+                    Ruolo = new Ruolo
+                    {
+                        Id = reader.GetInt32(6),
+                        Nome = reader.GetString(7)
+                    }
                 });
             }
             
@@ -37,7 +43,9 @@ namespace AttivaMente.Data
 
         public Utente? GetById(int id)
         {
-            string query = "SELECT * FROM Utenti WHERE Id = @idPlaceholder";
+            string query = @"SELECT u.Id, u.Nome, u.Cognome, u.Email, u.PasswordHash, u.RuoloId, r.Id AS Ruolo_Id, r.Nome AS Ruolo_Nome
+                FROM Utenti u LEFT JOIN Ruoli r ON u.RuoloId = r.Id
+                WHERE u.Id = @idPlaceholder";
             var parameters = new[] { new SqlParameter("@idPlaceholder", id) };
             using var reader = _db.ExecuteReader(query, parameters);
             if (reader.Read())
@@ -49,7 +57,12 @@ namespace AttivaMente.Data
                     Cognome = reader.GetString(2),
                     Email = reader.GetString(3),
                     PasswordHash = reader.GetString(4),
-                    RuoloId = reader.GetInt32(5)
+                    RuoloId = reader.GetInt32(5),
+                    Ruolo = reader.IsDBNull(6) ? null : new Ruolo
+                    {
+                        Id = reader.GetInt32(6),
+                        Nome = reader.GetString(7)
+                    }
                 };
             }
             return null;
