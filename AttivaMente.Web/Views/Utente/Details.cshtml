@@ -1,0 +1,36 @@
+﻿@model AttivaMente.Core.Models.Utente
+
+<h2>Dettaglio Utente</h2>
+
+<hr />
+
+<h4>Dati anagrafici</h4>
+<table class="table table-bordered">
+	<tr><th>ID</th><td>@Model.Id</td></tr>
+	<tr><th>Nome</th><td>@Model.Nome</td></tr>
+	<tr><th>Cognome</th><td>@Model.Cognome</td></tr>
+	<tr><th>Email</th><td>@Model.Email</td></tr>
+	<tr><th>Ruolo</th><td>@Model.Ruolo?.Nome</td></tr>
+</table>
+
+<hr />
+
+<h4>Cronologia attività (in sviluppo)</h4>
+<p class="text-muted">Funzionalità in arrivo: elenco delle attività svolte, punti accumulati, turni partecipati...</p>
+
+<ul>
+	<li>12/03/2025 – Distribuzione volantini (3 punti)</li>
+	<li>08/03/2025 – Presidio stand informativo (5 punti)</li>
+	<li>04/03/2025 – Riunione mensile (partecipazione)</li>
+</ul>
+
+<h4>Badge e riconoscimenti (in sviluppo)</h4>
+<p class="text-muted">Saranno visualizzati i badge ottenuti dall’utente in base alla sua partecipazione.</p>
+
+<div class="alert alert-info">
+	<strong>Badge:</strong> <span class="badge bg-success">Volontario attivo</span> <span class="badge bg-warning">Presenze 3+</span>
+</div>
+
+<hr />
+
+<a asp-action="Index" class="btn btn-secondary">Torna all'elenco</a>
