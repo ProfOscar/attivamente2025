@@ -1,0 +1,36 @@
+﻿@using AttivaMente.Core.Models
+@model List<Utente>
+
+<h2>Utenti registrati</h2>
+
+<a class="btn btn-primary mb-3" asp-action="Create">Aggiungi</a>
+
+<table class="table table-striped table-bordered">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Nome</th>
+			<th>Cognome</th>
+			<th>Email</th>
+			<th>Ruolo</th>
+			<th>Azioni</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var utente in Model)
+		{
+			<tr>
+				<td>@utente.Id</td>
+				<td>@utente.Nome</td>
+				<td>@utente.Cognome</td>
+				<td>@utente.Email</td>
+				<td>@utente.Ruolo?.Nome</td>
+				<td>
+					<a asp-action="Details" asp-route-id="@utente.Id" class="btn btn-info btn-sm">Dettagli</a>
+					<a asp-action="Edit" asp-route-id="@utente.Id" class="btn btn-warning btn-sm">Modifica</a>
+					<a asp-action="Delete" asp-route-id="@utente.Id" class="btn btn-danger btn-sm">Elimina</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

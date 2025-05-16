@@ -15,7 +15,8 @@ namespace AttivaMente.Data
         public List<Utente> GetAll()
         {
             var utenti = new List<Utente>();
-            string query = "SELECT * FROM Utenti";
+            string query = @"SELECT u.Id, u.Nome, u.Cognome, u.Email, u.PasswordHash, u.RuoloId, r.Id AS Ruolo_Id, r.Nome AS RuoloNome
+                FROM Utenti u INNER JOIN Ruoli r ON u.RuoloId = r.Id";
 
             using var reader = _db.ExecuteReader(query);
             while (reader.Read())
@@ -26,9 +27,14 @@ namespace AttivaMente.Data
                     Nome = reader.GetString(1),
                     Cognome = reader.GetString(2),
                     Email = reader.GetString(3),
-                    PasswordHash = reader.GetString(4),
+                    PasswordHash = reader.IsDBNull(4) ? "" : reader.GetString(4),
                     // PasswordHash = Convert.ToString(reader["PasswordHash"]) ?? "",
-                    RuoloId = reader.GetInt32(5)
+                    RuoloId = reader.GetInt32(5),
+                    Ruolo = new Ruolo
+                    {
+                        Id = reader.GetInt32(6),
+                        Nome = reader.GetString(7)
+                    }
                 });
             }
             
