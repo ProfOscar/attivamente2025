@@ -59,5 +59,27 @@ namespace AttivaMente.Web.Controllers
             ViewBag.SelectRuoli = new SelectList(_repoRuoli.GetAll(), "Id", "Nome");
             return View(utente);
         }
+
+        public IActionResult Edit(int id)
+        {
+            var utente = _repoUtenti.GetById(id);
+            if (utente == null) return NotFound();
+            ViewBag.Title = "Modifica Utente";
+            ViewBag.SelectRuoli = new SelectList(_repoRuoli.GetAll(), "Id", "Nome", utente.RuoloId);
+            return View(utente);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Utente utente)
+        {
+            if (ModelState.IsValid)
+            {
+                _repoUtenti.Update(utente);
+                return RedirectToAction("Index");
+            }
+            ViewBag.Title = "Modifica Utente";
+            ViewBag.Ruoli = new SelectList(_repoRuoli.GetAll(), "Id", "Nome", utente.RuoloId);
+            return View(utente);
+        }
     }
 }

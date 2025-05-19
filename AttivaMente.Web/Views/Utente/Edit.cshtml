@@ -1,0 +1,36 @@
+﻿@model AttivaMente.Core.Models.Utente
+
+<h2>@ViewBag.Title</h2>
+
+@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+<form asp-action="Edit" method="post" class="mt-4">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Nome" class="form-label"></label>
+        <input asp-for="Nome" class="form-control" />
+        <span asp-validation-for="Nome" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Cognome" class="form-label"></label>
+        <input asp-for="Cognome" class="form-control" />
+        <span asp-validation-for="Cognome" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Ruolo</label>
+        <select asp-for="RuoloId" asp-items="ViewBag.SelectRuoli" class="form-select"></select>
+        <span asp-validation-for="RuoloId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Salva Modifiche</button>
+    <a asp-action="Index" class="btn btn-secondary">Annulla</a>
+</form>
