@@ -84,6 +84,13 @@ namespace AttivaMente.Data
 
         public int Update(Utente utente)
         {
+            // Se password assente, recupero il suo attuale valore
+            if (string.IsNullOrWhiteSpace(utente.PasswordHash))
+            {
+                var esistente = GetById(utente.Id);
+                if (esistente == null) return 0;
+                utente.PasswordHash = esistente.PasswordHash;
+            }
             string sql = "UPDATE Utenti SET " +
                                 "Nome = @nomePlaceholder, Cognome = @cognPlaceholder, " +
                                 "Email = @emailPlaceholder, PasswordHash = @pwHashPlaceholder, RuoloId = @ruoloIdPlaceholder " +
