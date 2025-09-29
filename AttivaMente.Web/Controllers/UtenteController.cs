@@ -1,4 +1,5 @@
 ﻿using AttivaMente.Core.Models;
+using AttivaMente.Core.OfficeAutomation;
 using AttivaMente.Core.Security;
 using AttivaMente.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -81,6 +82,7 @@ namespace AttivaMente.Web.Controllers
             ViewBag.SelectRuoli = new SelectList(_repoRuoli.GetAll(), "Id", "Nome", utente.RuoloId);
             return View(utente);
         }
+
         public IActionResult Delete(int id)
         {
             var utente = _repoUtenti.GetById(id);
@@ -92,6 +94,21 @@ namespace AttivaMente.Web.Controllers
         {
             _repoUtenti.Delete(id);
             return RedirectToAction("Index");
+        }
+
+        public IActionResult CreateDocx(int id)
+        {
+            var utente = _repoUtenti.GetById(id);
+            if (utente == null) return NotFound();
+            ViewBag.Title = "Scarica DOCX Utente";
+            string saveFilePath = WordAutomation.CreateUserPage(utente, "C:\\Dati\\contact.docx");
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(saveFilePath);
+            System.IO.File.Delete(saveFilePath);
+            return File(
+                fileBytes, 
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                $"{utente.Cognome}_{utente.Nome}_{utente.Id}.docx");
         }
     }
 }
