@@ -7,7 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Templates\contact.docx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Templates\contact.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="DocX" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

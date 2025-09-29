@@ -1,6 +1,8 @@
 ﻿using AttivaMente.Core.Models;
+using AttivaMente.Core.OfficeAutomation;
 using AttivaMente.Core.Security;
 using AttivaMente.Data;
+using System.Diagnostics;
 
 #region InMemory
 Ruolo rAdmin = new Ruolo()
@@ -45,6 +47,7 @@ do
     Console.WriteLine("i) AGGIUNGI utente");
     Console.WriteLine("l) MODIFICA utente");
     Console.WriteLine("m) CANCELLA utente");
+    Console.WriteLine("n) STAMPA utente");
     Console.WriteLine("-----");
     Console.WriteLine("\nq) ESCI");
     Console.WriteLine();
@@ -80,6 +83,9 @@ do
             break;
         case 'm':
             CancellaUtente();
+            break;
+        case 'n':
+            StampaUtente();
             break;
         default:
             if (scelta != 'q') 
@@ -206,4 +212,25 @@ void CancellaUtente()
     else
         Console.WriteLine($"Utente con Id {idUtente} CANCELLATO correttamente");
 }
+
+void StampaUtente()
+{
+    Console.Write("\nInserisci l'Id dell'Utente da STAMPARE: ");
+    int idUtente = int.Parse(Console.ReadLine() ?? "0");
+    Utente? utente = utenteRepository.GetById(idUtente);
+    if (utente == null)
+        Console.WriteLine("NON TROVATO");
+    else
+    {
+        string saveFilePath = WordAutomation.CreateUserPage(utente, "Templates\\contact.docx");
+        Console.WriteLine($"Doc per utente {utente} creato correttamente");
+        string finalPath = AppContext.BaseDirectory + saveFilePath;
+        Console.WriteLine($"Il path del file creato è: {finalPath}");
+        ProcessStartInfo processStartInfo = new ProcessStartInfo(finalPath)
+        {
+            UseShellExecute = true
+        };
+        Process.Start(processStartInfo);
+    }
+ }
 #endregion
