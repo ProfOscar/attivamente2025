@@ -19,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="DocX" Version="5.0.0" />
+    <PackageReference Include="EPPlus" Version="6.2.19" />
   </ItemGroup>
 
 </Project>

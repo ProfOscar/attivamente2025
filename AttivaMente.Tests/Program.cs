@@ -47,7 +47,8 @@ do
     Console.WriteLine("i) AGGIUNGI utente");
     Console.WriteLine("l) MODIFICA utente");
     Console.WriteLine("m) CANCELLA utente");
-    Console.WriteLine("n) STAMPA utente");
+    Console.WriteLine("n) WORD utente");
+    Console.WriteLine("o) EXCEL utenti");
     Console.WriteLine("-----");
     Console.WriteLine("\nq) ESCI");
     Console.WriteLine();
@@ -85,7 +86,10 @@ do
             CancellaUtente();
             break;
         case 'n':
-            StampaUtente();
+            WordUtente();
+            break;
+        case 'o':
+            ExcelUtenti();
             break;
         default:
             if (scelta != 'q') 
@@ -213,7 +217,7 @@ void CancellaUtente()
         Console.WriteLine($"Utente con Id {idUtente} CANCELLATO correttamente");
 }
 
-void StampaUtente()
+void WordUtente()
 {
     Console.Write("\nInserisci l'Id dell'Utente da STAMPARE: ");
     int idUtente = int.Parse(Console.ReadLine() ?? "0");
@@ -233,4 +237,24 @@ void StampaUtente()
         Process.Start(processStartInfo);
     }
  }
+
+void ExcelUtenti()
+{
+    List<Utente> utenti = utenteRepository.GetAll();
+    if (utenti == null || utenti.Count == 0)
+        Console.WriteLine("UTENTI NON TROVATI");
+    else
+    {
+        string saveFilePath = ExcelAutomation.CreateUsersList(utenti, "utenti");
+        Console.WriteLine($"Xlsx per {utenti.Count} utenti creato correttamente");
+        string finalPath = AppContext.BaseDirectory + saveFilePath;
+        Console.WriteLine($"Il path del file creato è: {finalPath}");
+        ProcessStartInfo processStartInfo = new ProcessStartInfo(finalPath)
+        {
+            UseShellExecute = true
+        };
+        Process.Start(processStartInfo);
+    }
+}
+
 #endregion
