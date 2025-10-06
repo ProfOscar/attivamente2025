@@ -10,12 +10,10 @@ namespace AttivaMente.Core.OfficeAutomation
 {
     public static class ExcelAutomation
     {
-        public static string CreateUsersList(List<Utente> utenti, string outputFilePath)
+        public static byte[] GetUsersXlsxBytes(List<Utente> utenti)
         {
-            string outputFileName = $"{outputFilePath}_{DateTime.Now.ToString("yyyyMMdd")}.xlsx";
-            if (File.Exists(outputFileName)) File.Delete(outputFileName);
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            using (var package = new ExcelPackage(new FileInfo(outputFileName)))
+            using (var package = new ExcelPackage())
             {
                 // costruisco i contenuti del file
                 var ws = package.Workbook.Worksheets.Add("Utenti");
@@ -40,10 +38,8 @@ namespace AttivaMente.Core.OfficeAutomation
                 // larghezza colonne automatica
                 ws.Cells.AutoFitColumns();
 
-                // salvo il file
-                package.Save();
+                return package.GetAsByteArray();
             }
-            return outputFileName;
         }
     }
 }

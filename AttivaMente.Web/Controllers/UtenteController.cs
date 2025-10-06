@@ -4,6 +4,7 @@ using AttivaMente.Core.Security;
 using AttivaMente.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.IO;
 
 namespace AttivaMente.Web.Controllers
 {
@@ -101,10 +102,7 @@ namespace AttivaMente.Web.Controllers
             var utente = _repoUtenti.GetById(id);
             if (utente == null) return NotFound();
             ViewBag.Title = "Scarica DOCX Utente";
-            string saveFilePath = WordAutomation.CreateUserPage(utente, "C:\\Dati\\contact.docx");
-
-            byte[] fileBytes = System.IO.File.ReadAllBytes(saveFilePath);
-            System.IO.File.Delete(saveFilePath);
+			byte[] fileBytes = WordAutomation.GetUserDocxBytes(utente, "C:\\Dati\\contact.docx"); ;
             return File(
                 fileBytes, 
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -116,10 +114,7 @@ namespace AttivaMente.Web.Controllers
             var utenti = _repoUtenti.GetAll();
             if (utenti == null || utenti.Count == 0) return NotFound();
             ViewBag.Title = "Scarica XLSX Utente";
-            string saveFilePath = ExcelAutomation.CreateUsersList(utenti, "C:\\Dati\\utenti");
-            
-            byte[] fileBytes = System.IO.File.ReadAllBytes(saveFilePath);
-            System.IO.File.Delete(saveFilePath);
+            byte[] fileBytes = ExcelAutomation.GetUsersXlsxBytes(utenti);
             return File(
                 fileBytes,
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

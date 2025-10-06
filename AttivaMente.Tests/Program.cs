@@ -226,11 +226,13 @@ void WordUtente()
         Console.WriteLine("NON TROVATO");
     else
     {
-        string saveFilePath = WordAutomation.CreateUserPage(utente, "Templates\\contact.docx");
+        var bytes = WordAutomation.GetUserDocxBytes(utente, "Templates\\contact.docx");
+        // string saveFilePath = $"{AppContext.BaseDirectory}utente_{utente.Id}.docx";
+        string saveFilePath = $"C:\\Dati\\utente_{utente.Id}.docx";
+        File.WriteAllBytes(saveFilePath, bytes);
         Console.WriteLine($"Doc per utente {utente} creato correttamente");
-        string finalPath = AppContext.BaseDirectory + saveFilePath;
-        Console.WriteLine($"Il path del file creato è: {finalPath}");
-        ProcessStartInfo processStartInfo = new ProcessStartInfo(finalPath)
+        Console.WriteLine($"Il path del file creato è: {saveFilePath}");
+        ProcessStartInfo processStartInfo = new ProcessStartInfo(saveFilePath)
         {
             UseShellExecute = true
         };
@@ -245,11 +247,13 @@ void ExcelUtenti()
         Console.WriteLine("UTENTI NON TROVATI");
     else
     {
-        string saveFilePath = ExcelAutomation.CreateUsersList(utenti, "utenti");
+        var bytes = ExcelAutomation.GetUsersXlsxBytes(utenti);
+        // string saveFilePath = $"{AppContext.BaseDirectory}utenti_{DateTime.Now:yyyyMMdd}.xlsx";
+        string saveFilePath = $"C:\\Dati\\utenti_{DateTime.Now:yyyyMMdd}.xlsx";
+        File.WriteAllBytes(saveFilePath, bytes);
         Console.WriteLine($"Xlsx per {utenti.Count} utenti creato correttamente");
-        string finalPath = AppContext.BaseDirectory + saveFilePath;
-        Console.WriteLine($"Il path del file creato è: {finalPath}");
-        ProcessStartInfo processStartInfo = new ProcessStartInfo(finalPath)
+        Console.WriteLine($"Il path del file creato è: {saveFilePath}");
+        ProcessStartInfo processStartInfo = new ProcessStartInfo(saveFilePath)
         {
             UseShellExecute = true
         };
