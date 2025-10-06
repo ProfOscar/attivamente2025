@@ -110,5 +110,20 @@ namespace AttivaMente.Web.Controllers
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 $"{utente.Cognome}_{utente.Nome}_{utente.Id}.docx");
         }
+
+        public IActionResult CreateXlsx()
+        {
+            var utenti = _repoUtenti.GetAll();
+            if (utenti == null || utenti.Count == 0) return NotFound();
+            ViewBag.Title = "Scarica XLSX Utente";
+            string saveFilePath = ExcelAutomation.CreateUsersList(utenti, "C:\\Dati\\utenti");
+            
+            byte[] fileBytes = System.IO.File.ReadAllBytes(saveFilePath);
+            System.IO.File.Delete(saveFilePath);
+            return File(
+                fileBytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"Utenti_{DateTime.Now:yyyyMMdd}.xlsx");
+        }
     }
 }
