@@ -1,5 +1,6 @@
 ﻿using AttivaMente.Core.Models;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace AttivaMente.Data
 {
@@ -21,24 +22,28 @@ namespace AttivaMente.Data
             using var reader = _db.ExecuteReader(query);
             while (reader.Read())
             {
-                utenti.Add(new Utente
-                {
-                    Id = reader.GetInt32(0),
-                    Nome = reader.GetString(1),
-                    Cognome = reader.GetString(2),
-                    Email = reader.GetString(3),
-                    PasswordHash = reader.IsDBNull(4) ? "" : reader.GetString(4),
-                    // PasswordHash = Convert.ToString(reader["PasswordHash"]) ?? "",
-                    RuoloId = reader.GetInt32(5),
-                    Ruolo = new Ruolo
-                    {
-                        Id = reader.GetInt32(6),
-                        Nome = reader.GetString(7)
-                    }
-                });
+                Utente utente = MapUtente(reader);
+                utenti.Add(utente);
             }
             
             return utenti;
+        }
+
+        public List<Utente> Search(string searchTerm)
+        {
+            var utenti = new List<Utente>();
+            var pattern = $"%{searchTerm}%";
+			string query = @"SELECT u.Id, u.Nome, u.Cognome, u.Email, u.PasswordHash, u.RuoloId, r.Id AS Ruolo_Id, r.Nome AS RuoloNome
+                FROM Utenti u INNER JOIN Ruoli r ON u.RuoloId = r.Id WHERE u.Nome LIKE @pattern OR u.Cognome LIKE @pattern OR u.Email LIKE @pattern";
+			var parameters = new[] { new SqlParameter("@pattern", pattern) };
+
+			using var reader = _db.ExecuteReader(query, parameters);
+			while (reader.Read())
+			{
+				utenti.Add(MapUtente(reader));
+			}
+
+			return utenti;
         }
 
         public Utente? GetById(int id)
@@ -50,20 +55,7 @@ namespace AttivaMente.Data
             using var reader = _db.ExecuteReader(query, parameters);
             if (reader.Read())
             {
-                return new Utente
-                {
-                    Id = reader.GetInt32(0),
-                    Nome = reader.GetString(1),
-                    Cognome = reader.GetString(2),
-                    Email = reader.GetString(3),
-                    PasswordHash = reader.IsDBNull(4) ? "" : reader.GetString(4),
-                    RuoloId = reader.GetInt32(5),
-                    Ruolo = new Ruolo
-                    {
-                        Id = reader.GetInt32(6),
-                        Nome = reader.GetString(7)
-                    }
-                };
+                return MapUtente(reader);
             }
             return null;
         }
@@ -112,5 +104,24 @@ namespace AttivaMente.Data
             var parameters = new[] { new SqlParameter("@idPlaceholder", id) };
             return _db.ExecuteNonQuery(sql, parameters);
         }
+
+        private static Utente MapUtente(IDataRecord record)
+        {
+            return new Utente
+            {
+                Id = record.GetInt32(0),
+                Nome = record.GetString(1),
+                Cognome = record.GetString(2),
+                Email = record.GetString(3),
+                PasswordHash = record.IsDBNull(4) ? "" : record.GetString(4),
+                // PasswordHash = Convert.ToString(record["PasswordHash"]) ?? "",
+                RuoloId = record.GetInt32(5),
+                Ruolo = new Ruolo
+                {
+                    Id = record.GetInt32(6),
+                    Nome = record.GetString(7)
+                }
+            };
+		}
     }
 }

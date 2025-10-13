@@ -20,10 +20,13 @@ namespace AttivaMente.Web.Controllers
             _repoRuoli = new RuoloRepository(connStr);
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? searchTerm)
         {
             ViewBag.Title = "Utenti";
-            var utenti = _repoUtenti.GetAll();
+            ViewBag.SearchTerm = searchTerm;
+            List<Utente> utenti = string.IsNullOrWhiteSpace(searchTerm) 
+                ? _repoUtenti.GetAll() 
+                : _repoUtenti.Search(searchTerm);
             return View(utenti);
         }
 
