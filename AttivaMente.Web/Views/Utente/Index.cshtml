@@ -5,7 +5,7 @@
 
 <div class="d-flex gap-2 align-items-start flex-wrap mb-3">
 	<a class="btn btn-primary" asp-action="Create">Aggiungi</a>
-	<a class="btn btn-primary" asp-action="CreateXlsx">Scarica XLSX</a>
+	<a class="btn btn-primary" asp-action="CreateXlsx" asp-route-searchTerm="@ViewBag.SearchTerm">Scarica XLSX</a>
 	<form method="get" asp-action="Index" class="d-flex ms-auto">
 		<input type="text" name="searchTerm" class="form-control me-2"
 			   placeholder="Cerca per Nome, Cognome, eMail..." value="@ViewBag.SearchTerm" />

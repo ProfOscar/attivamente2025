@@ -112,16 +112,23 @@ namespace AttivaMente.Web.Controllers
                 $"{utente.Cognome}_{utente.Nome}_{utente.Id}.docx");
         }
 
-        public IActionResult CreateXlsx()
+        public IActionResult CreateXlsx(string? searchTerm)
         {
-            var utenti = _repoUtenti.GetAll();
-            if (utenti == null || utenti.Count == 0) return NotFound();
-            ViewBag.Title = "Scarica XLSX Utente";
-            byte[] fileBytes = ExcelAutomation.GetUsersXlsxBytes(utenti);
-            return File(
-                fileBytes,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                $"Utenti_{DateTime.Now:yyyyMMdd}.xlsx");
+			var utenti = string.IsNullOrWhiteSpace(searchTerm)
+				? _repoUtenti.GetAll()
+				: _repoUtenti.Search(searchTerm);
+            if (utenti != null && utenti.Count > 0)
+            {
+                ViewBag.Title = "Scarica XLSX Utente";
+                byte[] fileBytes = ExcelAutomation.GetUsersXlsxBytes(utenti);
+                return File(
+                    fileBytes,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    $"Utenti_{DateTime.Now:yyyyMMdd}.xlsx");
+            } else
+            {
+                return RedirectToAction("Index");
+            }
         }
     }
 }
