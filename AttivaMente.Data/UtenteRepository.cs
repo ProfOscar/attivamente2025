@@ -29,15 +29,28 @@ namespace AttivaMente.Data
             return utenti;
         }
 
-        public List<Utente> Search(string searchTerm)
+        public List<Utente> Search(string searchTerm, int? ruoloFilter)
         {
             var utenti = new List<Utente>();
             var pattern = $"%{searchTerm}%";
 			string query = @"SELECT u.Id, u.Nome, u.Cognome, u.Email, u.PasswordHash, u.RuoloId, r.Id AS Ruolo_Id, r.Nome AS RuoloNome
-                FROM Utenti u INNER JOIN Ruoli r ON u.RuoloId = r.Id WHERE u.Nome LIKE @pattern OR u.Cognome LIKE @pattern OR u.Email LIKE @pattern";
-			var parameters = new[] { new SqlParameter("@pattern", pattern) };
+                FROM Utenti u INNER JOIN Ruoli r ON u.RuoloId = r.Id WHERE (1=1)";
 
-			using var reader = _db.ExecuteReader(query, parameters);
+			var parameters = new List<SqlParameter>();
+            
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query += " AND (u.Nome LIKE @pattern OR u.Cognome LIKE @pattern OR u.Email LIKE @pattern)";
+                parameters.Add(new SqlParameter("@pattern", pattern));
+            }
+
+            if (ruoloFilter > 0)
+            {
+                query += " AND u.RuoloId = @ruoloFilter";
+                parameters.Add(new SqlParameter("@ruoloFilter", ruoloFilter));
+            }
+
+            using var reader = _db.ExecuteReader(query, parameters.ToArray());
 			while (reader.Read())
 			{
 				utenti.Add(MapUtente(reader));

@@ -5,8 +5,19 @@
 
 <div class="d-flex gap-2 align-items-start flex-wrap mb-3">
 	<a class="btn btn-primary" asp-action="Create">Aggiungi</a>
-	<a class="btn btn-primary" asp-action="CreateXlsx" asp-route-searchTerm="@ViewBag.SearchTerm">Scarica XLSX</a>
+	<a class="btn btn-primary" asp-action="CreateXlsx" 
+		asp-route-searchTerm="@ViewBag.SearchTerm" asp-route-ruoloFilter="@ViewBag.RuoloFilter">Scarica XLSX</a>
 	<form method="get" asp-action="Index" class="d-flex ms-auto">
+		<select name="ruoloFilter" class="form-select me-3">
+			<option value="0">Tutti i ruoli</option>
+			@foreach (var item in (SelectList)ViewBag.RuoliSelectList)
+			{
+				var isSelected = ViewBag.RuoloFilter == int.Parse(@item.Value);
+				<option value="@item.Value" selected="@isSelected">
+					@item.Text
+				</option>
+			}
+		</select>
 		<input type="text" name="searchTerm" class="form-control me-2"
 			   placeholder="Cerca per Nome, Cognome, eMail..." value="@ViewBag.SearchTerm" />
 		<button type="submit" class="btn btn-primary">Cerca</button>
