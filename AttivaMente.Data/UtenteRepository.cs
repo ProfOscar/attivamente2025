@@ -29,7 +29,7 @@ namespace AttivaMente.Data
             return utenti;
         }
 
-        public List<Utente> Search(string searchTerm, int? ruoloFilter)
+        public List<Utente> Search(string searchTerm, int? ruoloFilter, string? orderBy, string? direction)
         {
             var utenti = new List<Utente>();
             var pattern = $"%{searchTerm}%";
@@ -49,6 +49,26 @@ namespace AttivaMente.Data
                 query += " AND u.RuoloId = @ruoloFilter";
                 parameters.Add(new SqlParameter("@ruoloFilter", ruoloFilter));
             }
+
+
+            // --- ordinamento principale ---
+            string colonna = orderBy?.ToLower() switch
+            {
+                "id" => "u.Id",
+                "nome" => "u.Nome",
+                "cognome" => "u.Cognome",
+                "email" => "u.Email",
+                "ruolo" => "r.Nome",
+                _ => "u.Cognome"
+            };
+
+            // --- direzione ---
+            string direzione = (direction?.ToLower() == "desc") ? "DESC" : "ASC";
+
+            // --- ordinamento secondario fisso ---
+            query += $" ORDER BY {colonna} {direzione}";
+            if (colonna != "u.Cognome") query += ", u.Cognome ASC";
+            if (colonna != "u.Nome") query += ", u.Nome ASC";
 
             using var reader = _db.ExecuteReader(query, parameters.ToArray());
 			while (reader.Read())
