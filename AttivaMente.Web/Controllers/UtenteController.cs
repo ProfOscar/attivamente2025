@@ -20,18 +20,20 @@ namespace AttivaMente.Web.Controllers
             _repoRuoli = new RuoloRepository(connStr);
         }
 
-        public IActionResult Index(string? searchTerm, int? ruoloFilter)
+        public IActionResult Index(string? searchTerm, int? ruoloFilter, string? orderBy, string? direction)
         {
             ViewBag.Title = "Utenti";
             ViewBag.SearchTerm = searchTerm;
             ViewBag.RuoloFilter = ruoloFilter;
+            ViewBag.OrderBy = orderBy;
+            ViewBag.Direction = direction;
 
             var ruoli = _repoRuoli.GetAll();
             ViewBag.RuoliSelectList = new SelectList(ruoli, "Id", "Nome");
 
             List<Utente> utenti = string.IsNullOrWhiteSpace(searchTerm) && (ruoloFilter == 0) 
                 ? _repoUtenti.GetAll() 
-                : _repoUtenti.Search(searchTerm!, ruoloFilter);
+                : _repoUtenti.Search(searchTerm!, ruoloFilter, orderBy, direction);
             return View(utenti);
         }
 
@@ -117,11 +119,11 @@ namespace AttivaMente.Web.Controllers
                 $"{utente.Cognome}_{utente.Nome}_{utente.Id}.docx");
         }
 
-        public IActionResult CreateXlsx(string? searchTerm, int? ruoloFilter)
+        public IActionResult CreateXlsx(string? searchTerm, int? ruoloFilter, string? orderBy, string? direction)
         {
 			var utenti = string.IsNullOrWhiteSpace(searchTerm) && (ruoloFilter == 0)
 				? _repoUtenti.GetAll()
-				: _repoUtenti.Search(searchTerm!, ruoloFilter);
+				: _repoUtenti.Search(searchTerm!, ruoloFilter, orderBy, direction);
             if (utenti != null && utenti.Count > 0)
             {
                 ViewBag.Title = "Scarica XLSX Utente";

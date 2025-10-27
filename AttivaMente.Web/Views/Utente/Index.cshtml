@@ -24,16 +24,60 @@
 	</form>
 </div>
 
-
+@{
+	string orderBy = (ViewBag.OrderBy ?? "cognome").ToLower();
+	string direction = (ViewBag.Direction ?? "asc").ToLower();
+	string nextDir = (direction == "asc") ? "desc" : "asc";
+}
 <table class="table table-striped table-bordered">
 	<thead>
 		<tr>
-			<th>ID</th>
-			<th>Nome</th>
-			<th>Cognome</th>
-			<th>Email</th>
-			<th>Ruolo</th>
-			<th>Azioni</th>
+			<th>
+				<a asp-action="Index"
+				   asp-route-orderBy="id"
+				   asp-route-direction="@(orderBy == "id" ? nextDir : "asc")"
+				   asp-route-searchTerm="@ViewBag.SearchTerm"
+				   asp-route-ruoloFilter="@ViewBag.RuoloFilter">
+					ID @(orderBy == "id" ? (direction == "asc" ? "↑" : "↓") : "")
+				</a>
+			</th>
+			<th>
+				<a asp-action="Index"
+				   asp-route-orderBy="cognome"
+				   asp-route-direction="@(orderBy == "cognome" ? nextDir : "asc")"
+				   asp-route-searchTerm="@ViewBag.SearchTerm"
+				   asp-route-ruoloFilter="@ViewBag.RuoloFilter">
+					Cognome @(orderBy == "cognome" ? (direction == "asc" ? "↑" : "↓") : "")
+				</a>
+			</th>
+			<th>
+				<a asp-action="Index"
+				   asp-route-orderBy="nome"
+				   asp-route-direction="@(orderBy == "nome" ? nextDir : "asc")"
+				   asp-route-searchTerm="@ViewBag.SearchTerm"
+				   asp-route-ruoloFilter="@ViewBag.RuoloFilter">
+					Nome @(orderBy == "nome" ? (direction == "asc" ? "↑" : "↓") : "")
+				</a>
+			</th>
+			<th>
+				<a asp-action="Index"
+				   asp-route-orderBy="email"
+				   asp-route-direction="@(orderBy == "email" ? nextDir : "asc")"
+				   asp-route-searchTerm="@ViewBag.SearchTerm"
+				   asp-route-ruoloFilter="@ViewBag.RuoloFilter">
+					eMail @(orderBy == "email" ? (direction == "asc" ? "↑" : "↓") : "")
+				</a>
+			</th>
+			<th>
+				<a asp-action="Index"
+				   asp-route-orderBy="ruolo"
+				   asp-route-direction="@(orderBy == "ruolo" ? nextDir : "asc")"
+				   asp-route-searchTerm="@ViewBag.SearchTerm"
+				   asp-route-ruoloFilter="@ViewBag.RuoloFilter">
+					Ruolo @(orderBy == "ruolo" ? (direction == "asc" ? "↑" : "↓") : "")
+				</a>
+			</th>
+			<th style="color: var(--bs-link-color);">Azioni</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -41,8 +85,8 @@
 		{
 			<tr>
 				<td>@utente.Id</td>
-				<td>@utente.Nome</td>
 				<td>@utente.Cognome</td>
+				<td>@utente.Nome</td>
 				<td>@utente.Email</td>
 				<td>@utente.Ruolo?.Nome</td>
 				<td>
