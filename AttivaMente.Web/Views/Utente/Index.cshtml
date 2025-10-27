@@ -6,7 +6,12 @@
 <div class="d-flex gap-2 align-items-start flex-wrap mb-3">
 	<a class="btn btn-primary" asp-action="Create">Aggiungi</a>
 	<a class="btn btn-primary" asp-action="CreateXlsx" 
-		asp-route-searchTerm="@ViewBag.SearchTerm" asp-route-ruoloFilter="@ViewBag.RuoloFilter">Scarica XLSX</a>
+		asp-route-searchTerm="@ViewBag.SearchTerm" 
+		asp-route-ruoloFilter="@ViewBag.RuoloFilter"
+		asp-route-orderBy="@ViewBag.OrderBy"
+		asp-route-direction="@ViewBag.Direction">
+		Scarica XLSX
+	</a>
 	<form method="get" asp-action="Index" class="d-flex ms-auto">
 		<select name="ruoloFilter" class="form-select me-3">
 			<option value="0">Tutti i ruoli</option>
