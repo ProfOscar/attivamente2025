@@ -29,28 +29,37 @@ namespace AttivaMente.Data
             return utenti;
         }
 
-        public List<Utente> Search(string searchTerm, int? ruoloFilter, string? orderBy, string? direction)
-        {
+        public List<Utente> Search(
+            string searchTerm, 
+            int? ruoloFilter, 
+            string? orderBy, 
+            string? direction,
+			int page = 1,
+	        int pageSize = 10)
+		{
             var utenti = new List<Utente>();
             var pattern = $"%{searchTerm}%";
 			string query = @"SELECT u.Id, u.Nome, u.Cognome, u.Email, u.PasswordHash, u.RuoloId, r.Id AS Ruolo_Id, r.Nome AS RuoloNome
                 FROM Utenti u INNER JOIN Ruoli r ON u.RuoloId = r.Id WHERE (1=1)";
 
 			var parameters = new List<SqlParameter>();
-            
-            if (!string.IsNullOrWhiteSpace(searchTerm))
+
+			// --- ricerca ---
+			if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 query += " AND (u.Nome LIKE @pattern OR u.Cognome LIKE @pattern OR u.Email LIKE @pattern)";
                 parameters.Add(new SqlParameter("@pattern", pattern));
             }
 
-            if (ruoloFilter > 0)
+			// --- filtri ---
+			if (ruoloFilter > 0)
             {
                 query += " AND u.RuoloId = @ruoloFilter";
                 parameters.Add(new SqlParameter("@ruoloFilter", ruoloFilter));
             }
 
-            string colonna = orderBy?.ToLower() switch
+			// --- ordinamento ---
+			string colonna = orderBy?.ToLower() switch
             {
                 "id" => "u.Id",
                 "nome" => "u.Nome",
@@ -64,13 +73,40 @@ namespace AttivaMente.Data
 			if (colonna != "u.Cognome") query += ", u.Cognome ASC";
 			if (colonna != "u.Nome") query += ", u.Nome ASC";
 
+			// --- paginazione ---
+			int offset = (page - 1) * pageSize;
+            query += $" OFFSET {offset} ROWS FETCH NEXT {pageSize} ROWS ONLY";
+
 			using var reader = _db.ExecuteReader(query, parameters.ToArray());
 			while (reader.Read()) utenti.Add(MapUtente(reader));
 
 			return utenti;
         }
 
-        public Utente? GetById(int id)
+		public int Count(string? searchTerm, int? ruoloFilter)
+		{
+			string query = "SELECT COUNT(*) FROM Utenti WHERE (1=1)";
+			var parameters = new List<SqlParameter>();
+
+			if (!string.IsNullOrWhiteSpace(searchTerm))
+			{
+				query += " AND (Nome LIKE @pattern OR Cognome LIKE @pattern OR Email LIKE @pattern)";
+				parameters.Add(new SqlParameter("@pattern", $"%{searchTerm}%"));
+			}
+			if (ruoloFilter.HasValue && ruoloFilter.Value > 0)
+			{
+				query += " AND RuoloId = @ruoloFilter";
+				parameters.Add(new SqlParameter("@ruoloFilter", ruoloFilter.Value));
+			}
+
+            object result = _db.ExecuteScalar(query, parameters.ToArray());
+            int count = Convert.ToInt32(result);
+
+            return count;
+		}
+
+
+		public Utente? GetById(int id)
         {
             string query = @"SELECT u.Id, u.Nome, u.Cognome, u.Email, u.PasswordHash, u.RuoloId, r.Id AS Ruolo_Id, r.Nome AS RuoloNome
                 FROM Utenti u INNER JOIN Ruoli r ON u.RuoloId = r.Id

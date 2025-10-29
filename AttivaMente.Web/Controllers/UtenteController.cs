@@ -20,21 +20,33 @@ namespace AttivaMente.Web.Controllers
             _repoRuoli = new RuoloRepository(connStr);
         }
 
-        public IActionResult Index(string? searchTerm, int? ruoloFilter, string? orderBy, string? direction)
-        {
+        public IActionResult Index(
+            string? searchTerm, 
+            int? ruoloFilter, 
+            string? orderBy, 
+            string? direction,
+	        int page = 1,
+	        int pageSize = 10)
+		{
             ViewBag.Title = "Utenti";
             ViewBag.SearchTerm = searchTerm;
             ViewBag.RuoloFilter = ruoloFilter;
             ViewBag.OrderBy = orderBy;
             ViewBag.Direction = direction;
+			ViewBag.Page = page;
+			ViewBag.PageSize = pageSize;
 
-            var ruoli = _repoRuoli.GetAll();
+			var ruoli = _repoRuoli.GetAll();
             ViewBag.RuoliSelectList = new SelectList(ruoli, "Id", "Nome");
 
             List<Utente> utenti = string.IsNullOrWhiteSpace(searchTerm) && (ruoloFilter == 0) 
                 ? _repoUtenti.GetAll() 
-                : _repoUtenti.Search(searchTerm!, ruoloFilter, orderBy, direction);
-            return View(utenti);
+                : _repoUtenti.Search(searchTerm!, ruoloFilter, orderBy, direction, page, pageSize);
+			
+            int total = _repoUtenti.Count(searchTerm, ruoloFilter);
+            ViewBag.TotalPages = (int)Math.Ceiling(total / (double)pageSize);
+
+			return View(utenti);
         }
 
         public IActionResult Details(int id)
