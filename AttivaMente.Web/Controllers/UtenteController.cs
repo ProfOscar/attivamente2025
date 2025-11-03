@@ -4,7 +4,7 @@ using AttivaMente.Core.Security;
 using AttivaMente.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.IO;
+using System.Drawing.Printing;
 
 namespace AttivaMente.Web.Controllers
 {
@@ -20,20 +20,30 @@ namespace AttivaMente.Web.Controllers
             _repoRuoli = new RuoloRepository(connStr);
         }
 
-        public IActionResult Index(string? searchTerm, int? ruoloFilter, string? orderBy, string? direction)
+        public IActionResult Index(
+            string? searchTerm, 
+            int? ruoloFilter, 
+            string? orderBy, 
+            string? direction,
+            int page = 1,
+            int pageSize = 10)
         {
             ViewBag.Title = "Utenti";
             ViewBag.SearchTerm = searchTerm;
             ViewBag.RuoloFilter = ruoloFilter;
             ViewBag.OrderBy = orderBy;
             ViewBag.Direction = direction;
+            ViewBag.Page = page; 
+            ViewBag.PageSize = pageSize;
 
             var ruoli = _repoRuoli.GetAll();
             ViewBag.RuoliSelectList = new SelectList(ruoli, "Id", "Nome");
 
-            List<Utente> utenti = string.IsNullOrWhiteSpace(searchTerm) && (ruoloFilter == 0) 
-                ? _repoUtenti.GetAll() 
-                : _repoUtenti.Search(searchTerm!, ruoloFilter, orderBy, direction);
+            int totalRows = _repoUtenti.Count(searchTerm, ruoloFilter);
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalRows / pageSize);
+
+            List<Utente> utenti = _repoUtenti.Search(searchTerm!, ruoloFilter, orderBy, direction, page, pageSize);
+
             return View(utenti);
         }
 
@@ -121,9 +131,14 @@ namespace AttivaMente.Web.Controllers
 
         public IActionResult CreateXlsx(string? searchTerm, int? ruoloFilter, string? orderBy, string? direction)
         {
-			var utenti = string.IsNullOrWhiteSpace(searchTerm) && (ruoloFilter == 0)
+            int pageSize = 10;
+            int totalRows = _repoUtenti.Count(searchTerm, ruoloFilter);
+            int totalPages = (int)Math.Ceiling((double)totalRows / pageSize);
+
+            var utenti = string.IsNullOrWhiteSpace(searchTerm) && (ruoloFilter == 0)
 				? _repoUtenti.GetAll()
-				: _repoUtenti.Search(searchTerm!, ruoloFilter, orderBy, direction);
+				: _repoUtenti.Search(searchTerm!, ruoloFilter, orderBy, direction, 1, totalRows);
+            
             if (utenti != null && utenti.Count > 0)
             {
                 ViewBag.Title = "Scarica XLSX Utente";

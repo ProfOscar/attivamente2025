@@ -36,5 +36,15 @@ namespace AttivaMente.Data
             connection.Open();
             return command.ExecuteNonQuery();
         }
+
+        public object ExecuteScalar(string sql, SqlParameter[]? parameters = null)
+        {
+            using var connection = GetConnection();
+            using var command = new SqlCommand(sql, connection);
+            if (parameters != null)
+                command.Parameters.AddRange(parameters);
+            connection.Open();
+            return command.ExecuteScalar();
+        }
     }
 }

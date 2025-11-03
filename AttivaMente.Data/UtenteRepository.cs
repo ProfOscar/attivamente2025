@@ -1,5 +1,6 @@
 ﻿using AttivaMente.Core.Models;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using System.Data;
 
 namespace AttivaMente.Data
@@ -17,7 +18,7 @@ namespace AttivaMente.Data
         {
             var utenti = new List<Utente>();
             string query = @"SELECT u.Id, u.Nome, u.Cognome, u.Email, u.PasswordHash, u.RuoloId, r.Id AS Ruolo_Id, r.Nome AS RuoloNome
-                FROM Utenti u INNER JOIN Ruoli r ON u.RuoloId = r.Id";
+                FROM Utenti u INNER JOIN Ruoli r ON u.RuoloId = r.Id ORDER BY u.Cognome, u.Nome";
 
             using var reader = _db.ExecuteReader(query);
             while (reader.Read())
@@ -29,7 +30,13 @@ namespace AttivaMente.Data
             return utenti;
         }
 
-        public List<Utente> Search(string searchTerm, int? ruoloFilter, string? orderBy, string? direction)
+        public List<Utente> Search(
+            string searchTerm, 
+            int? ruoloFilter, 
+            string? orderBy, 
+            string? direction,
+            int page = 1,
+            int pageSize = 10)
         {
             var utenti = new List<Utente>();
             var pattern = $"%{searchTerm}%";
@@ -38,18 +45,21 @@ namespace AttivaMente.Data
 
 			var parameters = new List<SqlParameter>();
             
+            // --- ricerca ---
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 query += " AND (u.Nome LIKE @pattern OR u.Cognome LIKE @pattern OR u.Email LIKE @pattern)";
                 parameters.Add(new SqlParameter("@pattern", pattern));
             }
 
+            // --- filtri ---
             if (ruoloFilter > 0)
             {
                 query += " AND u.RuoloId = @ruoloFilter";
                 parameters.Add(new SqlParameter("@ruoloFilter", ruoloFilter));
             }
 
+            // --- ordinamento ---
             string colonna = orderBy?.ToLower() switch
             {
                 "id" => "u.Id",
@@ -64,10 +74,39 @@ namespace AttivaMente.Data
 			if (colonna != "u.Cognome") query += ", u.Cognome ASC";
 			if (colonna != "u.Nome") query += ", u.Nome ASC";
 
+            // --- paginazione ---
+            int offset = (page - 1) * pageSize;
+            query += $" OFFSET {offset} ROWS FETCH NEXT {pageSize} ROWS ONLY";
+
 			using var reader = _db.ExecuteReader(query, parameters.ToArray());
 			while (reader.Read()) utenti.Add(MapUtente(reader));
 
 			return utenti;
+        }
+
+        public int Count(string? searchTerm, int? ruoloFilter)
+        {
+            string query = @"SELECT COUNT(*) FROM Utenti WHERE (1=1)";
+            var parameters = new List<SqlParameter>();
+
+            // --- ricerca ---
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query += " AND (Nome LIKE @pattern OR Cognome LIKE @pattern OR Email LIKE @pattern)";
+                parameters.Add(new SqlParameter("@pattern", $"%{searchTerm}%"));
+            }
+
+            // --- filtri ---
+            if (ruoloFilter.HasValue && ruoloFilter > 0)
+            {
+                query += " AND RuoloId = @ruoloFilter";
+                parameters.Add(new SqlParameter("@ruoloFilter", ruoloFilter));
+            }
+
+            object result = _db.ExecuteScalar(query, parameters.ToArray());
+            int count = Convert.ToInt32(result);
+
+            return count;
         }
 
         public Utente? GetById(int id)
