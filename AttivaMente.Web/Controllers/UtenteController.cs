@@ -131,13 +131,9 @@ namespace AttivaMente.Web.Controllers
 
         public IActionResult CreateXlsx(string? searchTerm, int? ruoloFilter, string? orderBy, string? direction)
         {
-            int pageSize = 10;
-            int totalRows = _repoUtenti.Count(searchTerm, ruoloFilter);
-            int totalPages = (int)Math.Ceiling((double)totalRows / pageSize);
-
             var utenti = string.IsNullOrWhiteSpace(searchTerm) && (ruoloFilter == 0)
 				? _repoUtenti.GetAll()
-				: _repoUtenti.Search(searchTerm!, ruoloFilter, orderBy, direction, 1, totalRows);
+				: _repoUtenti.Search(searchTerm!, ruoloFilter, orderBy, direction, 1, int.MaxValue);
             
             if (utenti != null && utenti.Count > 0)
             {
