@@ -10,9 +10,6 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Abilita i file statici (CSS, JS, immagini)
-app.UseStaticFiles();
-
 
 #region TestCreazioneUtente
 //Ruolo rAdmin = new Ruolo()
@@ -34,20 +31,36 @@ app.UseStaticFiles();
 #endregion
 
 #region TestConnessioneDB
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-Database db = new Database(connectionString);
+//string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+//Database db = new Database(connectionString);
 
-try
-{
-    using var conn = db.GetConnection();
-    conn.Open();
-    Console.WriteLine("Connessione riuscita.");
-}
-catch (Exception ex)
-{
-    Console.WriteLine("Errore di connessione: " + ex.Message);
-}
+//try
+//{
+//    using var conn = db.GetConnection();
+//    conn.Open();
+//    Console.WriteLine("Connessione riuscita.");
+//}
+//catch (Exception ex)
+//{
+//    Console.WriteLine("Errore di connessione: " + ex.Message);
+//}
 #endregion
+
+// Variabili controllo DB
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+string dbPath = connectionString.Split(';')[1].Replace("AttachDbFilename=", "");
+string schemaPath = Path.GetFullPath(builder.Configuration["Database:SchemaPath"]);
+string migrationsPath = Path.GetFullPath(builder.Configuration["Database:MigrationsPath"]);
+
+var db = new Database(connectionString);
+
+// Inizializza DB se assente
+db.EnsureDatabaseCreated(dbPath, schemaPath);
+
+// TODO: Gestione migrazioni DB
+
+// Abilita i file statici (CSS, JS, immagini)
+app.UseStaticFiles();
 
 // Configura il routing: usa i Controller e le Views
 app.UseRouting();
