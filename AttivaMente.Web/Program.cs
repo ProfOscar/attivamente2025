@@ -50,12 +50,16 @@ var app = builder.Build();
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 string dbPath = connectionString.Split(';')[1].Replace("AttachDbFilename=", "");
 string schemaPath = Path.GetFullPath(builder.Configuration["Database:SchemaPath"]);
+string seedDataPath = Path.GetFullPath(builder.Configuration["Database:SeedDataPath"]);
 string migrationsPath = Path.GetFullPath(builder.Configuration["Database:MigrationsPath"]);
 
 var db = new Database(connectionString);
 
 // Inizializza DB se assente
 db.EnsureDatabaseCreated(dbPath, schemaPath);
+
+// Seed dati iniziali
+db.InitialDataSeed(dbPath, seedDataPath);
 
 // TODO: Gestione migrazioni DB
 

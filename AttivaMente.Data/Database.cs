@@ -116,9 +116,23 @@ namespace AttivaMente.Data
                 // Creo il db
                 CreateDatabase(dbPath);
 
-                // Eseguo lo script per lo schema sul db appena creato
+                // Eseguo lo script per creare le tabelle sul db appena creato
                 ExecuteScript(schemaPath);
             }
+        }
+
+        public void InitialDataSeed(string dbPath, string seedDataPath)
+        {
+            // Controlla se ci non ci sono dati (COUNT = 0)
+            // nelle tabelle Ruoli e Utenti; in quel caso lancia lo script
+            string sql = @"SELECT MAX(A.C) FROM 
+                            (SELECT COUNT(*) as C FROM Ruoli 
+                            UNION ALL 
+                            SELECT COUNT(*) AS C FROM Utenti) 
+                            A";
+            int n = (int)ExecuteScalar(sql);
+            if (n == 0)
+                ExecuteScript(seedDataPath);
         }
     }
 }
