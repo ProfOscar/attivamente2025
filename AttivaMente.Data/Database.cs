@@ -63,11 +63,30 @@ namespace AttivaMente.Data
 
             try
             {
+                string ldfPath = $"{dbFolder}\\{dbName}_log.ldf";
+
+                // Questo blocco try...catch è indispensabile e va mantenuto
+                // perché evita un problema in caso di cancellazione manuale
+                // del dbf dal file system
+                try { 
+                    using (var connection = new SqlConnection(@"Server=(localDB)\MSSQLLocalDB;Integrated Security=true"))
+                    {
+
+                        string sql = $@"
+                        IF DB_ID('{dbName}') IS NOT NULL
+                        BEGIN
+                            ALTER DATABASE [{dbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                            DROP DATABASE [{dbName}];
+                        END";
+                        connection.Open();
+                        using var commandDrop = new SqlCommand(sql, connection);
+                        commandDrop.ExecuteNonQuery();
+                    }
+                } catch { }
+
                 using (var connection = new SqlConnection(@"Server=(localDB)\MSSQLLocalDB;Integrated Security=true"))
                 {
-                    string ldfPath = $"{dbFolder}\\{dbName}_log.ldf";
-                    string sql = $@"
-                    CREATE DATABASE [{dbName}]
+                    string sql = $@"CREATE DATABASE [{dbName}]
                     ON PRIMARY (
                         NAME = {dbName}_Data,
                         FILENAME = '{dbPath}'
@@ -76,10 +95,9 @@ namespace AttivaMente.Data
                         NAME = {dbName}_Log,
                         FILENAME = '{ldfPath}'
                     )";
-
                     connection.Open();
-                    using var command = new SqlCommand(sql, connection);
-                    command.ExecuteNonQuery();
+                    using var commandCreate = new SqlCommand(sql, connection);
+                    commandCreate.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
