@@ -53,15 +53,23 @@ string schemaPath = Path.GetFullPath(builder.Configuration["Database:SchemaPath"
 string seedDataPath = Path.GetFullPath(builder.Configuration["Database:SeedDataPath"]);
 string migrationsPath = Path.GetFullPath(builder.Configuration["Database:MigrationsPath"]);
 
+// Log posizione DB e scripts
+Console.WriteLine($"[AttivaMente] DB path: {dbPath}");
+Console.WriteLine($"[AttivaMente] Schema SQL path: {schemaPath}");
+Console.WriteLine($"[AttivaMente] Seed Data  path: {seedDataPath}");
+Console.WriteLine($"[AttivaMente] Migrations path: {migrationsPath}");
+
 var db = new Database(connectionString);
 
 // Inizializza DB se assente
 db.EnsureDatabaseCreated(dbPath, schemaPath);
 
 // Seed dati iniziali
-db.InitialDataSeed(dbPath, seedDataPath);
+db.InitialDataSeed(seedDataPath);
 
-// TODO: Gestione migrazioni DB
+// Migrazioni incrementali
+db.ApplyMigrations(migrationsPath);
+
 
 // Abilita i file statici (CSS, JS, immagini)
 app.UseStaticFiles();

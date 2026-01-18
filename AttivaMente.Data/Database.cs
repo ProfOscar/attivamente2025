@@ -68,7 +68,8 @@ namespace AttivaMente.Data
                 // Questo blocco try...catch è indispensabile e va mantenuto
                 // perché evita un problema in caso di cancellazione manuale
                 // del dbf dal file system
-                try { 
+                try
+                {
                     using (var connection = new SqlConnection(@"Server=(localDB)\MSSQLLocalDB;Integrated Security=true"))
                     {
 
@@ -82,7 +83,8 @@ namespace AttivaMente.Data
                         using var commandDrop = new SqlCommand(sql, connection);
                         commandDrop.ExecuteNonQuery();
                     }
-                } catch { }
+                }
+                catch { }
 
                 using (var connection = new SqlConnection(@"Server=(localDB)\MSSQLLocalDB;Integrated Security=true"))
                 {
@@ -121,7 +123,7 @@ namespace AttivaMente.Data
             }
         }
 
-        public void InitialDataSeed(string dbPath, string seedDataPath)
+        public void InitialDataSeed(string seedDataPath)
         {
             // Controlla se ci non ci sono dati (COUNT = 0)
             // nelle tabelle Ruoli e Utenti; in quel caso lancia lo script
@@ -133,6 +135,50 @@ namespace AttivaMente.Data
             int n = (int)ExecuteScalar(sql);
             if (n == 0)
                 ExecuteScript(seedDataPath);
+        }
+
+        public void ApplyMigrations(string migrationsPath)
+        {
+            var files = Directory
+            .GetFiles(migrationsPath, "*.sql")
+            .OrderBy(f => f)
+            .ToList();
+
+            foreach (var file in files)
+            {
+                string scriptName = Path.GetFileName(file);
+
+                // Controllo se la migrazione è già stata applicata
+                // (funziona da 002 in poi)
+                bool alreadyApplied = false;
+                try
+                {
+                    string checkSql =
+                    "SELECT COUNT(*) FROM DbMigrations WHERE ScriptName = @name";
+
+                    var parameters = new[] { new SqlParameter("@name", scriptName) };
+
+                    alreadyApplied = (int)ExecuteScalar(checkSql, parameters) > 0;
+                }
+                catch
+                {
+                    // Qui siamo prima della 001:
+                    // DbMigrations non esiste ancora
+                }
+
+                if (alreadyApplied)
+                    continue;
+
+                // Esegue lo script di migrazione
+                Console.WriteLine($"[AttivaMente] Applying migration: {file}");
+                ExecuteScript(file);
+
+                // Registra la migrazione
+                string insertSql =
+                "INSERT INTO DbMigrations (ScriptName) VALUES (@name)";
+
+                ExecuteNonQuery(insertSql, new[] { new SqlParameter("@name", scriptName) });
+            }
         }
     }
 }

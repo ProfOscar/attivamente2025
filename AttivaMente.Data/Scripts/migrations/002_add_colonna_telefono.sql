@@ -1,0 +1,2 @@
+ALTER TABLE Utenti
+ADD Telefono NVARCHAR(20) NULL;
