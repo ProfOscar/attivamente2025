@@ -1,6 +1,5 @@
 ﻿using AttivaMente.Core.Models;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using System.Data;
 
 namespace AttivaMente.Data
