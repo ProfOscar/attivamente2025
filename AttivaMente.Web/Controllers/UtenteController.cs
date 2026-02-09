@@ -4,7 +4,6 @@ using AttivaMente.Core.Security;
 using AttivaMente.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Drawing.Printing;
 
 namespace AttivaMente.Web.Controllers
 {
