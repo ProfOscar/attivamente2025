@@ -9,7 +9,7 @@ namespace AttivaMente.Core.Models
 
         [Required(ErrorMessage = "Il nome è obbligatorio")]
         [StringLength(50)] 
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
 
         public override string ToString()
         {
