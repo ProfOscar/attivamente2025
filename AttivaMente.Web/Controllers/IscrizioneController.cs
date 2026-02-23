@@ -15,16 +15,25 @@ namespace AttivaMente.Web.Controllers
             _repoUtenti = new UtenteRepository(connStr);
         }
 
-        public IActionResult Index(int? anno)
+        public IActionResult Index(int? anno, string isSoloIscritti = "true")
         {
             var years = _repoIscrizioni.GetYears();
             int selected = anno ?? (years.Count > 0 ? years[0] : DateTime.Now.Year);
 
             ViewBag.Years = years;
             ViewBag.SelectedYear = selected;
+            ViewBag.IsSoloIscritti = isSoloIscritti;
 
-            var iscritti = _repoIscrizioni.GetByYear(selected);
+            var iscritti = isSoloIscritti == "true" ? _repoIscrizioni.GetByYear(selected) : _repoIscrizioni.GetAll();
             return View(iscritti);
+        }
+
+        [HttpPost]
+        public IActionResult Renew(int utenteId, int anno)
+        {
+            _repoIscrizioni.Renew(utenteId, anno);
+
+            return RedirectToAction("Index", new { anno });
         }
     }
 }
