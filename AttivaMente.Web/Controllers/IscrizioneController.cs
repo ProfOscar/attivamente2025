@@ -16,7 +16,7 @@ namespace AttivaMente.Web.Controllers
             _utenteRepository = new UtenteRepository(connStr);
         }
 
-        public IActionResult Index(int? anno, bool soloIscritti = true)
+        public IActionResult Index(int? anno, bool soloIscritti = true, string? ricerca = null)
         {
             int currentYear = DateTime.Now.Year;
             var years = _iscrizioneRepository.GetYears();
@@ -37,6 +37,7 @@ namespace AttivaMente.Web.Controllers
             {
                 SelectedYear = selectedYear,
                 SoloIscritti = soloIscritti,
+                Ricerca = ricerca ?? "",
                 Years = years
             };
 
@@ -102,36 +103,48 @@ namespace AttivaMente.Web.Controllers
                 }
             }
 
+            if (!string.IsNullOrWhiteSpace(ricerca))
+            {
+                string testo = ricerca.Trim().ToLower();
+
+                model.Rows = model.Rows
+                    .Where(r =>
+                        ($"{r.Cognome} {r.Nome}").ToLower().Contains(testo) ||
+                        r.Cognome.ToLower().Contains(testo) ||
+                        r.Nome.ToLower().Contains(testo))
+                    .ToList();
+            }
+
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Delete(int utenteId, int anno, bool soloIscritti)
+        public IActionResult Delete(int utenteId, int anno, bool soloIscritti, string? ricerca)
         {
             _iscrizioneRepository.Delete(utenteId, anno);
-            return RedirectToAction("Index", new { anno, soloIscritti });
+            return RedirectToAction("Index", new { anno, soloIscritti, ricerca });
         }
 
         [HttpPost]
-        public IActionResult Renew(int utenteId, int anno, bool soloIscritti)
+        public IActionResult Renew(int utenteId, int anno, bool soloIscritti, string? ricerca)
         {
             if (!_iscrizioneRepository.Exists(utenteId, anno))
             {
                 _iscrizioneRepository.Insert(utenteId, anno, "Rinnovo");
             }
 
-            return RedirectToAction("Index", new { anno, soloIscritti });
+            return RedirectToAction("Index", new { anno, soloIscritti, ricerca });
         }
 
         [HttpPost]
-        public IActionResult Subscribe(int utenteId, int anno, bool soloIscritti)
+        public IActionResult Subscribe(int utenteId, int anno, bool soloIscritti, string? ricerca)
         {
             if (!_iscrizioneRepository.Exists(utenteId, anno))
             {
                 _iscrizioneRepository.Insert(utenteId, anno, "Nuova");
             }
 
-            return RedirectToAction("Index", new { anno, soloIscritti });
+            return RedirectToAction("Index", new { anno, soloIscritti, ricerca });
         }
     }
 }

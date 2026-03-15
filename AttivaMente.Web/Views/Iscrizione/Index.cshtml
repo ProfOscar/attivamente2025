@@ -1,98 +1,144 @@
 ﻿@model AttivaMente.Web.ViewModels.IscrizioniIndexViewModel
 
-<h2>Iscrizioni - @Model.SelectedYear</h2>
+<h2 class="mb-2">Iscrizioni - @Model.SelectedYear</h2>
 
-<form method="get" asp-action="Index" class="mb-3 d-flex align-items-center gap-3 flex-wrap">
-	<div class="d-flex align-items-center gap-2">
-		<label class="form-label mb-0">Anno:</label>
-		<select name="anno" class="form-select w-auto" onchange="this.form.submit()">
-			@foreach (var year in Model.Years)
-			{
-				if (year == Model.SelectedYear)
-				{
-					<option value="@year" selected>@year</option>
-				}
-				else
-				{
-					<option value="@year">@year</option>
-				}
-			}
-		</select>
-	</div>
+<form method="get" asp-action="Index" class="mb-3">
+	<div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
 
-	<div class="d-flex align-items-center gap-2">
-		<div class="form-check">
-			<input class="form-check-input"
-				   type="radio"
-				   name="soloIscritti"
-				   value="true"
-				   @(Model.SoloIscritti ? "checked" : null)
-				   onchange="this.form.submit()" />
-			<label class="form-check-label">Solo Iscritti</label>
+		<div class="d-flex align-items-end gap-3 flex-wrap">
+			<div>
+				<label for="anno" class="form-label mb-1">Anno</label>
+				<select id="anno" name="anno" class="form-select w-auto py-2" onchange="this.form.submit()">
+					@foreach (var year in Model.Years)
+					{
+						if (year == Model.SelectedYear)
+						{
+							<option value="@year" selected>@year</option>
+						}
+						else
+						{
+							<option value="@year">@year</option>
+						}
+					}
+				</select>
+			</div>
+
+			<div>
+				<label class="form-label mb-1 d-block">Visualizzazione</label>
+				<div class="d-flex align-items-center gap-3 border rounded px-3 py-2 bg-light">
+					<div class="form-check mb-0">
+						<input class="form-check-input"
+							   type="radio"
+							   id="soloIscritti"
+							   name="soloIscritti"
+							   value="true"
+							   checked="@(Model.SoloIscritti)"
+							   onchange="this.form.submit()" />
+						<label class="form-check-label" for="soloIscritti">Solo Iscritti</label>
+					</div>
+
+					<div class="form-check mb-0">
+						<input class="form-check-input"
+							   type="radio"
+							   id="tutti"
+							   name="soloIscritti"
+							   value="false"
+							   checked="@(!Model.SoloIscritti)"
+							   onchange="this.form.submit()" />
+						<label class="form-check-label" for="tutti">Tutti</label>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<div class="form-check">
-			<input class="form-check-input"
-				   type="radio"
-				   name="soloIscritti"
-				   value="false"
-				   @(!Model.SoloIscritti ? "checked" : null)
-				   onchange="this.form.submit()" />
-			<label class="form-check-label">Tutti</label>
+		<div class="d-flex align-items-end gap-2 flex-wrap">
+			<div>
+				<label for="ricerca" class="form-label mb-1">Cerca</label>
+				<input type="text"
+					   id="ricerca"
+					   name="ricerca"
+					   value="@Model.Ricerca"
+					   class="form-control"
+					   placeholder="Cognome o nome"
+					   style="min-width: 240px;" />
+			</div>
+
+			<div class="d-flex gap-2">
+				<button type="submit" class="btn btn-primary">Cerca</button>
+
+				<a asp-action="Index"
+				   asp-route-anno="@Model.SelectedYear"
+				   asp-route-soloIscritti="@Model.SoloIscritti"
+				   class="btn btn-outline-secondary">
+					Pulisci
+				</a>
+			</div>
 		</div>
 	</div>
 </form>
 
-<table class="table table-striped table-bordered">
-	<thead>
+<table class="table table-striped table-bordered align-middle">
+	<thead class="table-light">
 		<tr>
 			<th>Cognome</th>
 			<th>Nome</th>
 			<th>Email</th>
 			<th>Tipo</th>
 			<th>Data Iscrizione</th>
-			<th>Azioni</th>
+			<th style="width: 140px;">Azioni</th>
 		</tr>
 	</thead>
 	<tbody>
-		@foreach (var row in Model.Rows)
+		@if (Model.Rows.Count == 0)
 		{
 			<tr>
-				<td>@row.Cognome</td>
-				<td>@row.Nome</td>
-				<td>@row.Email</td>
-				<td>@row.Tipo</td>
-				<td>@(row.DataIscrizione?.ToString("dd/MM/yyyy"))</td>
-				<td>
-					@if (row.Azione == "Cancella")
-					{
-						<form method="post" asp-action="Delete">
-							<input type="hidden" name="utenteId" value="@row.UtenteId" />
-							<input type="hidden" name="anno" value="@Model.SelectedYear" />
-							<input type="hidden" name="soloIscritti" value="@Model.SoloIscritti" />
-							<button type="submit" class="btn btn-sm btn-outline-danger">Cancella</button>
-						</form>
-					}
-					else if (row.Azione == "Rinnova")
-					{
-						<form method="post" asp-action="Renew">
-							<input type="hidden" name="utenteId" value="@row.UtenteId" />
-							<input type="hidden" name="anno" value="@Model.SelectedYear" />
-							<input type="hidden" name="soloIscritti" value="@Model.SoloIscritti" />
-							<button type="submit" class="btn btn-sm btn-outline-primary">Rinnova</button>
-						</form>
-					}
-					else if (row.Azione == "Iscrivi")
-					{
-						<form method="post" asp-action="Subscribe">
-							<input type="hidden" name="utenteId" value="@row.UtenteId" />
-							<input type="hidden" name="anno" value="@Model.SelectedYear" />
-							<input type="hidden" name="soloIscritti" value="@Model.SoloIscritti" />
-							<button type="submit" class="btn btn-sm btn-outline-success">Iscrivi</button>
-						</form>
-					}
-				</td>
+				<td colspan="6" class="text-center text-muted">Nessun record trovato.</td>
 			</tr>
+		}
+		else
+		{
+			@foreach (var row in Model.Rows)
+			{
+				<tr>
+					<td>@row.Cognome</td>
+					<td>@row.Nome</td>
+					<td>@row.Email</td>
+					<td>@row.Tipo</td>
+					<td>@(row.DataIscrizione?.ToString("dd/MM/yyyy"))</td>
+					<td>
+						@if (row.Azione == "Cancella")
+						{
+							<form method="post" asp-action="Delete" class="mb-0">
+								<input type="hidden" name="utenteId" value="@row.UtenteId" />
+								<input type="hidden" name="anno" value="@Model.SelectedYear" />
+								<input type="hidden" name="soloIscritti" value="@(Model.SoloIscritti ? "true" : "false")" />
+								<input type="hidden" name="ricerca" value="@Model.Ricerca" />
+								<button type="submit" class="btn btn-sm btn-outline-danger w-100">Cancella</button>
+							</form>
+						}
+						else if (row.Azione == "Rinnova")
+						{
+							<form method="post" asp-action="Renew" class="mb-0">
+								<input type="hidden" name="utenteId" value="@row.UtenteId" />
+								<input type="hidden" name="anno" value="@Model.SelectedYear" />
+								<input type="hidden" name="soloIscritti" value="@(Model.SoloIscritti ? "true" : "false")" />
+								<input type="hidden" name="ricerca" value="@Model.Ricerca" />
+								<button type="submit" class="btn btn-sm btn-outline-primary w-100">Rinnova</button>
+							</form>
+						}
+						else if (row.Azione == "Iscrivi")
+						{
+							<form method="post" asp-action="Subscribe" class="mb-0">
+								<input type="hidden" name="utenteId" value="@row.UtenteId" />
+								<input type="hidden" name="anno" value="@Model.SelectedYear" />
+								<input type="hidden" name="soloIscritti" value="@(Model.SoloIscritti ? "true" : "false")" />
+								<input type="hidden" name="ricerca" value="@Model.Ricerca" />
+								<button type="submit" class="btn btn-sm btn-outline-success w-100">Iscrivi</button>
+							</form>
+						}
+					</td>
+				</tr>
+			}
 		}
 	</tbody>
 </table>
