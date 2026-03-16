@@ -1,4 +1,5 @@
 ﻿using AttivaMente.Data;
+using AttivaMente.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AttivaMente.Web.Controllers
@@ -15,25 +16,109 @@ namespace AttivaMente.Web.Controllers
             _repoUtenti = new UtenteRepository(connStr);
         }
 
-        public IActionResult Index(int? anno, string isSoloIscritti = "true")
+        public IActionResult Index(int? anno, bool isSoloIscritti = true)
         {
+            int currentYear = DateTime.Now.Year;
             var years = _repoIscrizioni.GetYears();
-            int selected = anno ?? (years.Count > 0 ? years[0] : DateTime.Now.Year);
 
-            ViewBag.Years = years;
-            ViewBag.SelectedYear = selected;
-            ViewBag.IsSoloIscritti = isSoloIscritti;
+            if (!years.Contains(currentYear))
+                years.Insert(0, currentYear);
 
-            var iscritti = isSoloIscritti == "true" ? _repoIscrizioni.GetByYear(selected) : _repoIscrizioni.GetAll();
-            return View(iscritti);
+            // Questa riga sistema eventuali incongruenze a db (iscrizioni in anni futuri)
+            years = years.Distinct().OrderByDescending(x => x).ToList();
+
+            int selectedYear = anno ?? currentYear;
+
+            var model = new IscrizioniIndexViewModel
+            {
+                SelectedYear = selectedYear,
+                IsSoloIscritti = isSoloIscritti,
+                Years = years
+            };
+
+            if (isSoloIscritti)
+            {
+                var iscritti = _repoIscrizioni.GetByYear(selectedYear);
+                foreach (var item in iscritti)
+                {
+                    model.Rows.Add(new IscrizioneRowViewModel
+                    {
+                        UtenteId = item.UtenteId,
+                        Cognome = item.Utente!.Cognome,
+                        Nome = item.Utente!.Nome,
+                        Email = item.Utente!.Email,
+                        Tipo = item.Tipo,
+                        DataIscrizione = item.DataIscrizione,
+                        Azione = "Cancella"
+                    });
+                }
+            }
+            else
+            {
+                var utenti = _repoUtenti.GetAll();
+                var iscrizioniAnno = _repoIscrizioni.GetByYear(selectedYear);
+                foreach (var item in utenti)
+                {
+                    var iscrizioneAnnoCorrente = iscrizioniAnno.FirstOrDefault(i => i.UtenteId == item.Id);
+                    bool isIscrittoAnnoSelezionato = iscrizioneAnnoCorrente != null;
+                    bool isIscrittoAnnoPrecedente = _repoIscrizioni.Exists(item.Id, selectedYear - 1);
+
+                    string azione;
+                    string? tipo = null;
+                    DateTime? dataIscrizione = null;
+
+                    if (isIscrittoAnnoSelezionato)
+                    {
+                        azione = "Cancella";
+                        tipo = iscrizioneAnnoCorrente!.Tipo;
+                        dataIscrizione = iscrizioneAnnoCorrente.DataIscrizione;
+                    }
+                    else if (isIscrittoAnnoPrecedente)
+                        azione = "Rinnova";
+                    else
+                        azione = "Iscrivi";
+
+                    model.Rows.Add(new IscrizioneRowViewModel
+                    {
+                        UtenteId = item.Id,
+                        Cognome = item.Cognome,
+                        Nome = item.Nome,
+                        Email = item.Email,
+                        Tipo = tipo,
+                        DataIscrizione = dataIscrizione,
+                        Azione = azione
+                    });
+                }
+            }
+
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Renew(int utenteId, int anno)
+        public IActionResult Delete(int utenteId, int anno, bool isSoloIscritti)
         {
-            _repoIscrizioni.Renew(utenteId, anno);
+            _repoIscrizioni.Delete(utenteId, anno);
+            return RedirectToAction("Index", new { anno, isSoloIscritti });
+        }
 
-            return RedirectToAction("Index", new { anno });
+        [HttpPost]
+        public IActionResult Renew(int utenteId, int anno, bool isSoloIscritti)
+        {
+            if (!_repoIscrizioni.Exists(utenteId, anno))
+            {
+                _repoIscrizioni.Insert(utenteId, anno, "Rinnovo");
+            }
+            return RedirectToAction("Index", new { anno, isSoloIscritti });
+        }
+
+        [HttpPost]
+        public IActionResult Subscribe(int utenteId, int anno, bool isSoloIscritti)
+        {
+            if (!_repoIscrizioni.Exists(utenteId, anno))
+            {
+                _repoIscrizioni.Insert(utenteId, anno, "Nuova");
+            }
+            return RedirectToAction("Index", new { anno, isSoloIscritti });
         }
     }
 }
