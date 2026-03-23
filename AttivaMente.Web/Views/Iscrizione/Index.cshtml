@@ -16,7 +16,7 @@
 
     <div class="d-flex align-items-center gap-2">
         <div class="form-check">
-            <input cIslass="form-check-input" type="radio" name="isSoloIscritti" value="true"
+            <input class="form-check-input" type="radio" name="isSoloIscritti" value="true"
                    checked="@(Model.IsSoloIscritti)" onchange="this.form.submit()" />
             <label class="form-check-label">Solo Iscritti</label>
         </div>
@@ -25,6 +25,15 @@
                    checked="@(!Model.IsSoloIscritti)" onchange="this.form.submit()" />
             <label class="form-check-label">Tutti</label>
         </div>
+    </div>
+
+    <div>
+        <label for="ricerca" class="form-label mb-1">Cerca</label>
+        <input class="form-control" type="text" id="ricerca" name="ricerca" value="@Model.Ricerca"
+               placeholder="Cognome e/o nome" style="min-width: 240px;" />
+    </div>
+    <div>
+        <button class="btn btn-primary" type="submit">Cerca</button>
     </div>
 </form>
 
