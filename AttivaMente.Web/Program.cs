@@ -1,13 +1,21 @@
 using AttivaMente.Core.Models;
 using AttivaMente.Core.Security;
 using AttivaMente.Data;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
+// Crea il builder
 var builder = WebApplication.CreateBuilder(args);
 
 // Aggiunge i servizi MVC (Controllers + Views)
 builder.Services.AddControllersWithViews();
 
+// Aggiunge supporto per Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Crea l'app
 var app = builder.Build();
 
 
@@ -85,4 +93,12 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}"
 );
 
+// Se siamo in ambiente di sviluppo, abilitiamo Swagger
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+// Lanciamo l'applicazione
 app.Run();
